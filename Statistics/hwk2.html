@@ -55,6 +55,22 @@
             color: white;
             font-size: 0.9rem;
         }
+
+        .riquadro-testo {
+      width: 400px;
+      padding: 20px;
+      margin: 40px auto;
+      background-color: #f8f9fa;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: #333;
+      line-height: 1.5;
+      overflow-y: auto; /* permette lo scroll se il testo è lungo */
+      max-height: 200px; /* limita l'altezza */
+    }
     </style>
 </head>
 <body>
@@ -68,13 +84,51 @@
     <article>
         <h1>Breaking Caesar's Cypher</h1>
         <div class="post-meta">
-            <span>Posted on April 27, 2025 by John Doe</span>
+            <span>Posted on October 12, 2025 by Andrea Buratti</span>
         </div>
         <p>Caesar's cypher is a simple substitution cipher where each letter in the plaintext is shifted a certain number of places down or up the alphabet. For example, with a shift of 3, 'A' would be replaced by 'D', 'B' would become 'E', and so on.</p>
         <p>To break Caesar's cypher, one common method is to use frequency analysis. This involves analyzing the frequency of letters in the encrypted text and comparing it to the known frequency of letters in the language of the plaintext. In English, for example, 'E' is the most common letter, followed by 'T', 'A', 'O', 'I', and 'N'. By identifying the most frequent letters in the ciphertext, we can make educated guesses about which letters they correspond to in the plaintext.</p>
         <p>Another approach is to try all possible shifts (there are only 25 possible shifts in a standard alphabet) and see which one produces a readable message. This brute-force method is feasible due to the limited number of possibilities.</p>
         <p>Once we have identified a potential shift, we can decode the entire message and check if it makes sense. If it does, we have successfully broken the cypher!</p>
+    
+        <h2>The Procedure</h2>
+                <p>To implement the breaking of Caesar's cypher, we can follow these steps:</p>
+
+                <ol>
+                    <li>Count the frequency of each letter in the ciphertext.</li>
+                    <li>Identify the most frequent letters and make educated guesses about their plaintext equivalents.</li>
+                    <li>Try all possible shifts and decode the message for each shift.</li>
+                    <li>Check the decoded messages for readability and coherence.</li>
+
+                </ol>
+
+                <h3> The first step</h3>
+                <p> We first need to take a text and encrypt it, then we will try to break the cypher.</p>
+                <div class="riquadro-testo">
+                    <p>Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?”
+
+So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.
+
+There was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself, “Oh dear! Oh dear! I shall be late!” (when she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and burning with curiosity, she ran across the field after it, and fortunately was just in time to see it pop down a large rabbit-hole under the hedge.
+
+In another moment down went Alice after it, never once considering how in the world she was to get out again.</p>
+                </div>
+
+                <p> Of course, punctuation and spaces are not encrypted, so they remain the same in the cyphertext. Maybe there can be some sort of exploit
+                regarding them, but that's not the point, i really like Alice in Wonderland so let me use it!</p>
+
+
+
+
+
+
+
+
+
+
     </article>
+
+
 
 
 </main>
@@ -82,6 +136,15 @@
     <footer>
         <p>&copy; 2025 Il Mio Blog — Tutti i diritti riservati.</p>
     </footer>
+
+    <script>
+        function generateKey()
+        {
+
+
+        }
+
+    </script>
 
 </body>
 </html>
