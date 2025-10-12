@@ -95,6 +95,29 @@
             Spam filters from companies like Google and Microsoft use Bayesian models to automatically classify billions of emails every day.
         </p>
 
+        <h2>Probability Distributions for Predicting Attacks</h2>
+        <p>
+            Probability distributions are a powerful tool in predicting the likelihood of cybersecurity events. By fitting past data into known distributions—such as the Poisson or exponential distributions—you can estimate the probability of future events. 
+
+For instance, the Poisson distribution is particularly useful for modeling the frequency of random events over a fixed period, such as the number of attempted breaches in a week. It can also determine the probability of each target being affected, prompting preemptive actions like separating access to sensitive corporate data with zero-trust WiFi only, instead of public networks. 
+
+The exponential distribution, on the other hand, can be used to estimate the time between consecutive attacks, providing insight into whether your defenses might need reinforcement. These probability models give a quantifiable outlook on expected attack frequencies, which can be instrumental in budget allocation and response planning.
+
+
+        </p>            
+
+        <h2>Monte Carlo Simulations for Risk Forecasting
+        </h2>
+        <p>Monte Carlo simulations are particularly effective for evaluating cybersecurity scenarios where uncertainty and complexity are high. By simulating thousands or even millions of possible outcomes, this method provides a range of potential future risk profiles, allowing decision-makers to understand the probabilities of different scenarios.</p>
+        <p>For instance, a Monte Carlo simulation can be used to estimate the potential financial impact of data breaches over the next year. Input variables might include attack frequency, the probability of a successful breach, and the average cost of a breach. 
+
+The simulation will produce a distribution of possible outcomes, which can help organizations prepare for worst-case scenarios while still focusing on the most probable risks.</p>
+
+        <h2>Markov Chains for Attack Path Analysis
+        </h2>
+        <p>Markov chains are used to model systems that transition between various states, making them ideal for representing attack paths. In cybersecurity, an attack path consists of a sequence of steps that an attacker might take to achieve their objectives, such as moving from initial access to lateral movement within a network.
+
+By assigning probabilities to each state transition, Markov chains can help estimate the likelihood of an attacker reaching a particular objective based on the system’s current state. This can be useful for identifying critical control points where intervention can significantly reduce overall risk.</p>
         <h2>Breaking Simple Cryptography Schemes</h2>
         <p>
             Modern cryptography is based on solid mathematical principles, but simpler schemes (like the Caesar cipher or the Vigenère cipher) can be broken using statistical techniques.
