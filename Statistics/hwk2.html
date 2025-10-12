@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Titolo del post del blog">
+    <title>Breaking Caesar's Cypher</title>
+    <style>
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        article h1 {
+            color: #111;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        article img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #222;
+            color: white;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Homework 2</h1>
+    </header>
+
+<main>
+
+    <article>
+        <h1>Breaking Caesar's Cypher</h1>
+        <div class="post-meta">
+            <span>Posted on April 27, 2025 by John Doe</span>
+        </div>
+        <p>Caesar's cypher is a simple substitution cipher where each letter in the plaintext is shifted a certain number of places down or up the alphabet. For example, with a shift of 3, 'A' would be replaced by 'D', 'B' would become 'E', and so on.</p>
+        <p>To break Caesar's cypher, one common method is to use frequency analysis. This involves analyzing the frequency of letters in the encrypted text and comparing it to the known frequency of letters in the language of the plaintext. In English, for example, 'E' is the most common letter, followed by 'T', 'A', 'O', 'I', and 'N'. By identifying the most frequent letters in the ciphertext, we can make educated guesses about which letters they correspond to in the plaintext.</p>
+        <p>Another approach is to try all possible shifts (there are only 25 possible shifts in a standard alphabet) and see which one produces a readable message. This brute-force method is feasible due to the limited number of possibilities.</p>
+        <p>Once we have identified a potential shift, we can decode the entire message and check if it makes sense. If it does, we have successfully broken the cypher!</p>
+    </article>
+
+
+</main>
+
+    <footer>
+        <p>&copy; 2025 Il Mio Blog — Tutti i diritti riservati.</p>
+    </footer>
+
+</body>
+</html>
+
