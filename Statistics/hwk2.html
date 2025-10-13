@@ -117,6 +117,18 @@ In another moment down went Alice after it, never once considering how in the wo
                 <p> Of course, punctuation and spaces are not encrypted, so they remain the same in the cyphertext. Maybe there can be some sort of exploit
                 regarding them, but that's not the point, i really like Alice in Wonderland so let me use it!</p>
 
+                <h3> The second step</h3>
+                <p> 
+                    Now we need to encrypt the text, for that we need a key, which is just a number between 1 and 25, representing the shift. Clicking on the "generate key" button should
+                    do the work, and you will see the text getting encrypted right away
+                </p>
+
+                <button onclick="generateKey()">Generate Key</button>
+
+                <p> Now that we encrypted the text, we will try to break it. Again, the rule is that, even when shifting letters, their count won't change. We can guess how much the shift was
+                    by simply counting! </p>
+
+                <h3> The third step</h3>
 
 
 
@@ -138,11 +150,39 @@ In another moment down went Alice after it, never once considering how in the wo
     </footer>
 
     <script>
+
+        let key = 0;
         function generateKey()
         {
-
+            key = Math.floor(Math.random() * 25) + 1; // genera un numero tra 1 e 25
+            encryptText(key);
 
         }
+        
+        function encryptText(key)
+        {
+            testo = window.document.getElementsByClassName("riquadro-testo")[0].innerText;
+            let encryptedText = "";
+            for(let i = 0; i < testo.length; i++)
+            {
+                let char = testo[i];
+                if(char >= 'a' && char <= 'z')
+                {
+                    let shiftedCharCode = ((char.charCodeAt(0) - 'a'.charCodeAt(0) + key) % 26) + 'a'.charCodeAt(0);
+                    encryptedText += String.fromCharCode(shiftedCharCode);
+                }
+                else if(char >= 'A' && char <= 'Z')
+                {
+                    let shiftedCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) + key) % 26) + 'A'.charCodeAt(0);
+                    encryptedText += String.fromCharCode(shiftedCharCode);
+                }
+                else
+                {
+                    encryptedText += char; // non cambia
+                }
+            }
+        }
+
 
     </script>
 
