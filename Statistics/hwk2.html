@@ -140,7 +140,7 @@ In another moment down went Alice after it, never once considering how in the wo
                 <p> As you can see, the most frequent letter is 'e', which is also the most frequent letter in the English language. Guessing the shift is now easy.
                     There are various ways to do it, my choice is simply to subtract the ascii code of 'e' from the ascii code of the most frequent letter, and then take modulo 26.
                 </p>
-                <button onclick="alert('The guessed key is: ' + guessKey(grafico.data.labels[grafico.data.datasets[0].data.indexOf(Math.max(...grafico.data.datasets[0].data))]) + '\nThe actual key is: ' + key)">Guess the Key</button>
+                <button onclick="alert('The guessed key is: ' + guessKey() + '\nThe actual key is: ' + key)">Guess the Key</button>
 
 
 
@@ -253,9 +253,10 @@ In another moment down went Alice after it, never once considering how in the wo
             window.document.getElementsByClassName("riquadro-testo")[0].innerText = encryptedText;
         }
 
-        function guessKey(mostFrequentChar)
+        function guessKey()
         {
             // 'e' is the most frequent char in english
+            let mostFrequentChar = grafico.data.labels[grafico.data.datasets[0].data.indexOf(Math.max(...grafico.data.datasets[0].data))];
             const assumedPlaintextChar = 'e';
             let guessedKey = (mostFrequentChar.charCodeAt(0) - assumedPlaintextChar.charCodeAt(0) + 26) % 26;
             if(guessedKey === 0) guessedKey = 26; // to avoid 0 key
