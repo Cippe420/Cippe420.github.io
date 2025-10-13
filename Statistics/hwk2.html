@@ -123,12 +123,22 @@ In another moment down went Alice after it, never once considering how in the wo
                     do the work, and you will see the text getting encrypted right away
                 </p>
 
-                <button onclick="generateKey()">Generate Key</button>
+                <button onclick="generateKey(),analizzaTesto()">Generate Key</button>
 
                 <p> Now that we encrypted the text, we will try to break it. Again, the rule is that, even when shifting letters, their count won't change. We can guess how much the shift was
                     by simply counting! </p>
 
                 <h3> The third step</h3>
+                <p>
+                    Counting the letters is not that big of a task, and the results are listed below:
+                </p>
+
+                <canvas id="graficoFrequenza" width="400" height="200"></canvas>
+
+
+
+
+
 
 
 
@@ -147,11 +157,61 @@ In another moment down went Alice after it, never once considering how in the wo
 
     <footer>
         <p>&copy; 2025 Il Mio Blog — Tutti i diritti riservati.</p>
-    </footer>
+    </footer>   
 
     <script>
 
+        let grafico;
+
+
+
         let key = 0;
+        let testo = "";
+
+
+        function analizzaTesto()
+        {
+            const testo = window.document.getElementsByClassName("riquadro-testo")[0].innerText;
+            const frequenza = {};
+            let totaleLettere = 0;
+            for (let i = 0; i < testo.length; i++) {
+                const char = testo[i].toLowerCase();
+                if (char >= 'a' && char <= 'z') { // considera solo lettere
+                    frequenza[char] = (frequenza[char] || 0) + 1;
+                    totaleLettere++;
+                }
+            }
+
+            const lettere = Object.keys(frequenza).sort();
+            const percentuali = lettere.map(lettera => (frequenza[lettera] / totaleLettere) * 100).toFixed(2);
+            const ctx = document.getElementById('graficoFrequenza').getContext('2d');
+            if(grafico) grafico.destroy();
+
+            grafico = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: lettere,
+                    datasets: [{
+                        label: 'Frequenza (%)',
+                        data: percentuali,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+        }
+
+
+
         function generateKey()
         {
             key = Math.floor(Math.random() * 25) + 1; // genera un numero tra 1 e 25
