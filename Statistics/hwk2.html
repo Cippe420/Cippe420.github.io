@@ -137,7 +137,8 @@ In another moment down went Alice after it, never once considering how in the wo
                 <canvas id="graficoFrequenza" width="400" height="200"></canvas>
                 </div>
 
-                <p> As you can see, the most frequent letter is 'e', which is also the most frequent letter in the English language. Guessing the shift is now easy.
+                <p> As you can see, before the most frequent letter was 'e', which is also the most frequent letter in the English language. Guessing the shift is now easy,since we can observe that
+                    the most frequent char changed.
                     There are various ways to do it, my choice is simply to subtract the ascii code of 'e' from the ascii code of the most frequent letter, and then take modulo 26.
                 </p>
                 <button onclick="alert('The guessed key is: ' + guessKey() + '\nThe actual key is: ' + key)">Guess the Key</button>
