@@ -262,6 +262,7 @@ In another moment down went Alice after it, never once considering how in the wo
             const labels = grafico.data.labels;
 
             const values = grafico.data.datasets[0].data;
+            value = values.map(v => parseFloat(v)); // converti in numeri
 
             const maxIndex = values.indexOf(Math.max(...values));
             console.log("Max index:", maxIndex);
