@@ -272,7 +272,7 @@ In another moment down went Alice after it, never once considering how in the wo
             value = values.map(v => parseFloat(v)); // converti in numeri
             console.log("Values:", value);
 
-            const maxIndex = values.indexOf(Math.max(...value));
+            const maxIndex = value.indexOf(Math.max(...value));
             console.log("Max index:", maxIndex);
             const mostFrequentChar = labels[maxIndex];
 
