@@ -256,6 +256,7 @@ In another moment down went Alice after it, never once considering how in the wo
         function guessKey()
         {
             // 'e' is the most frequent char in english
+            console.log("grafico", grafico.data);
             let mostFrequentChar = grafico.data.labels[grafico.data.datasets[0].data.indexOf(Math.max(...grafico.data.datasets[0].data))];
             console.log(mostFrequentChar);
             const assumedPlaintextChar = 'e';
