@@ -264,6 +264,9 @@ In another moment down went Alice after it, never once considering how in the wo
             const maxIndex = values.indexOf(Math.max(...values));
             const mostFrequentChar = labels[maxIndex];
             const assumedPlaintextChar = 'e';
+            console.log("Most frequent char in cyphertext:", mostFrequentChar);
+            console.log("Assumed most frequent char in plaintext:", assumedPlaintextChar);
+
             let guessedKey = (mostFrequentChar.charCodeAt(0) - assumedPlaintextChar.charCodeAt(0) + 26) % 26;
             if(guessedKey === 0) guessedKey = 26; // to avoid 0 key
             console.log("Guessed key:", guessedKey);
