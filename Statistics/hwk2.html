@@ -260,9 +260,13 @@ In another moment down went Alice after it, never once considering how in the wo
             console.log("grafico data datasets 0 data", grafico.data.datasets[0].data);
             console.log("grafico data labels", grafico.data.labels);
             const labels = grafico.data.labels;
+
             const values = grafico.data.datasets[0].data;
+
             const maxIndex = values.indexOf(Math.max(...values));
+            console.log("Max index:", maxIndex);
             const mostFrequentChar = labels[maxIndex];
+
             const assumedPlaintextChar = 'e';
             console.log("Most frequent char in cyphertext:", mostFrequentChar);
             console.log("Assumed most frequent char in plaintext:", assumedPlaintextChar);
