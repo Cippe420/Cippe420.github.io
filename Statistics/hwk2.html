@@ -260,11 +260,12 @@ In another moment down went Alice after it, never once considering how in the wo
             console.log("grafico data datasets 0 data", grafico.data.datasets[0].data);
             console.log("grafico data labels", grafico.data.labels);
             const labels = grafico.data.labels;
-
+            let value = [];
             const values = grafico.data.datasets[0].data;
             value = values.map(v => parseFloat(v)); // converti in numeri
+            console.log("Values:", value);
 
-            const maxIndex = values.indexOf(Math.max(...values));
+            const maxIndex = values.indexOf(Math.max(...value));
             console.log("Max index:", maxIndex);
             const mostFrequentChar = labels[maxIndex];
 
