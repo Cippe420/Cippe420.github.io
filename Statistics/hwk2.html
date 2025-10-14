@@ -190,6 +190,13 @@ In another moment down went Alice after it, never once considering how in the wo
                     totaleLettere++;
                 }
             }
+            const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+            alphabet.forEach(letter => {
+                if (!frequenza[letter]) {
+                    frequenza[letter] = 0;
+                }
+            });
+
 
             const lettere = Object.keys(frequenza).sort();
             const percentuali = lettere.map(lettera => ((frequenza[lettera] / totaleLettere) * 100).toFixed(2));
