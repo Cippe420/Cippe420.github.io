@@ -83,6 +83,230 @@
 <main>
 
     <article>
+<section id="dataset-distributions" style="font-family: Arial, sans-serif; padding: 2rem; background-color: #f9f9f9; line-height: 1.6;">
+  <h2 style="color: #2c3e50;">📊 Datasets and Distributions in DBMS</h2>
+  <p>
+    In a <strong>Database Management System (DBMS)</strong>, a <strong>dataset</strong> represents a collection of organized data, 
+    usually stored in tables that may be related to each other.  
+    Each table describes a specific aspect of the system, and every row (or record) represents an individual data instance — 
+    such as a customer, a product, or a transaction.
+  </p>
+
+  <h3 style="color: #34495e;">Example Dataset: Online Store Management</h3>
+  <p>
+    Let’s consider a database used to store information for an online shop.  
+    It could include tables such as:
+  </p>
+
+  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: white;">
+    <caption style="font-weight: bold; margin-bottom: 0.5rem;">Table: <em>Customers</em></caption>
+    <thead style="background-color: #ecf0f1;">
+      <tr>
+        <th>Customer_ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>City</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Luca Rossi</td>
+        <td>luca.rossi@example.com</td>
+        <td>Milan</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Giulia Bianchi</td>
+        <td>giulia.bianchi@example.com</td>
+        <td>Rome</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br>
+
+  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: white;">
+    <caption style="font-weight: bold; margin-bottom: 0.5rem;">Table: <em>Orders</em></caption>
+    <thead style="background-color: #ecf0f1;">
+      <tr>
+        <th>Order_ID</th>
+        <th>Customer_ID</th>
+        <th>Order_Date</th>
+        <th>Total (€)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>101</td>
+        <td>1</td>
+        <td>2025-09-20</td>
+        <td>120.00</td>
+      </tr>
+      <tr>
+        <td>102</td>
+        <td>2</td>
+        <td>2025-09-22</td>
+        <td>75.50</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="color: #34495e; margin-top: 2rem;">Data Distributions</h3>
+  <p>
+    <strong>Distributions</strong> describe how the values of a given attribute are spread across a dataset.  
+    For example, we can analyze the distribution of customers by city or of order totals by amount.
+  </p>
+
+  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: white;">
+    <caption style="font-weight: bold; margin-bottom: 0.5rem;">Customer Distribution by City</caption>
+    <thead style="background-color: #ecf0f1;">
+      <tr>
+        <th>City</th>
+        <th>Number of Customers</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Milan</td>
+        <td>50</td>
+        <td>40%</td>
+      </tr>
+      <tr>
+        <td>Rome</td>
+        <td>30</td>
+        <td>24%</td>
+      </tr>
+      <tr>
+        <td>Turin</td>
+        <td>20</td>
+        <td>16%</td>
+      </tr>
+      <tr>
+        <td>Other</td>
+        <td>25</td>
+        <td>20%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 1rem;">
+    This information is essential to better understand the behavior of data, optimize queries, 
+    and make data-driven decisions using statistical analysis and <em>data distribution</em>.
+  </p>
+</section>
+<section id="univariate-bivariate-distributions" style="font-family: Arial, sans-serif; padding: 2rem; background-color: #ffffff; line-height: 1.6;">
+  <h2 style="color: #2c3e50;">📈 Univariate and Bivariate Distributions</h2>
+  <p>
+    In data analysis, <strong>distributions</strong> describe how the values of one or more variables are organized 
+    within a dataset. We typically distinguish between two main types:
+  </p>
+
+  <h3 style="color: #34495e;">1️⃣ Univariate Distribution</h3>
+  <p>
+    A <strong>univariate distribution</strong> involves only one variable.  
+    It helps us understand how the values of that single attribute are spread.  
+    For example, in our online shop database, we can study the distribution of 
+    <strong>order totals</strong>.
+  </p>
+
+  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: #fdfdfd;">
+    <caption style="font-weight: bold; margin-bottom: 0.5rem;">Univariate Distribution: Order Totals</caption>
+    <thead style="background-color: #ecf0f1;">
+      <tr>
+        <th>Total Range (€)</th>
+        <th>Number of Orders</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0 - 50</td>
+        <td>40</td>
+        <td>25%</td>
+      </tr>
+      <tr>
+        <td>51 - 100</td>
+        <td>70</td>
+        <td>43.8%</td>
+      </tr>
+      <tr>
+        <td>101 - 200</td>
+        <td>35</td>
+        <td>21.9%</td>
+      </tr>
+      <tr>
+        <td>Over 200</td>
+        <td>15</td>
+        <td>9.3%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 1rem;">
+    From this distribution, we can see that most orders fall within the <strong>€51–100</strong> range — 
+    valuable information for pricing and marketing strategies.
+  </p>
+
+  <h3 style="color: #34495e; margin-top: 2rem;">2️⃣ Bivariate Distribution</h3>
+  <p>
+    A <strong>bivariate distribution</strong> analyzes the relationship between <em>two variables</em>.  
+    In our case, we can study how a customer's <strong>city</strong> relates to their 
+    <strong>average order value</strong>.
+  </p>
+
+  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: #fdfdfd;">
+    <caption style="font-weight: bold; margin-bottom: 0.5rem;">Bivariate Distribution: City vs Average Order Value</caption>
+    <thead style="background-color: #ecf0f1;">
+      <tr>
+        <th>City</th>
+        <th>Number of Customers</th>
+        <th>Average Order Value (€)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Milan</td>
+        <td>50</td>
+        <td>110.50</td>
+      </tr>
+      <tr>
+        <td>Rome</td>
+        <td>30</td>
+        <td>95.20</td>
+      </tr>
+      <tr>
+        <td>Turin</td>
+        <td>20</td>
+        <td>80.30</td>
+      </tr>
+      <tr>
+        <td>Other</td>
+        <td>25</td>
+        <td>75.10</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 1rem;">
+    From this example, we can observe that customers from <strong>Milan</strong> tend to spend more 
+    than those in other cities.  
+    This correlation might suggest geographical differences in purchasing behavior.
+  </p>
+
+  <p>
+    Bivariate distributions are often visualized through <em>scatter plots</em> or <em>heatmaps</em>, 
+    which help illustrate the relationship between two quantitative variables.
+  </p>
+
+  <blockquote style="border-left: 4px solid #3498db; padding-left: 1rem; color: #555; background-color: #f4faff;">
+    💡 <strong>In summary:</strong>  
+    - A <strong>univariate distribution</strong> analyzes one variable (e.g., order totals).  
+    - A <strong>bivariate distribution</strong> studies the relationship between two variables (e.g., city and average spending).  
+  </blockquote>
+</section>
+
         <h1>Breaking Caesar's Cypher</h1>
         <div class="post-meta">
             <span>Posted on October 12, 2025 by Andrea Buratti</span>
