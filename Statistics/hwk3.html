@@ -260,11 +260,10 @@ return Number(m);
 const pt = codesToStr(codes);
 state.decrypted = pt;
 // display
-cipherTextEl.textContent = JSON.stringify(state.ciphertext.slice(0,200), null, 2) + '
-
+cipherTextEl.textContent = `${JSON.stringify(state.ciphertext.slice(0, 200), null, 2)}
 
 -- Decrypted plaintext --
-' + pt;
+${pt}`;
 // compute frequencies and animate chart
 const freqs = computeLetterFrequencies(pt);
 animateTo(freqs, 1000);
