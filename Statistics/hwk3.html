@@ -214,12 +214,16 @@
 
         n = p * q; // modulus
         phi = (p - 1) * (q - 1); // totient
+
+        console.log(`Chosen p: ${p}, q: ${q}`);
+        console.log(`Calculated n: ${n}, phi: ${phi}`);
         let e = 7; // public exponent
 
         // Ensure that e is coprime to phi and n
         while (gcd(e, phi) !== 1) {
             e += 2; // increment e to find a coprime
         }
+        console.log(`Chosen e: ${e}`);
 
         // Calculate d, the modular multiplicative inverse of e mod phi
         function modInverse(e, phi) {
