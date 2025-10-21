@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Titolo del post del blog">
+    <title>Breaking Caesar's Cypher</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        article h1 {
+            color: #111;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        article img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #222;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .riquadro-testo {
+      width: 400px;
+      padding: 20px;
+      margin: 40px auto;
+      background-color: #f8f9fa;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: #333;
+      line-height: 1.5;
+      overflow-y: auto; /* permette lo scroll se il testo è lungo */
+      max-height: 200px; /* limita l'altezza */
+    }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Homework 3</h1>
+    </header>
+
+<main>
+
+    <article>
+
+   >
+                <section>
+<h2>Breaking the RSA cypher</h2>
+
+
+<div class="warning">
+<strong>Warning:</strong> the discussion that follows is conceptual and focuses on why insecure parameter choices make cryptosystems vulnerable. It does not provide operational instructions for attacking real systems. Always follow laws and responsible disclosure practices.
+</div>
+
+
+<p>RSA security relies on the mathematical difficulty of factoring the modulus <code>N = p &middot; q</code> when <code>p</code> and <code>q</code> are large secret primes. If <code>p</code> and <code>q</code> are chosen too small, two broad failure modes appear:</p>
+<ul>
+<li><strong>Factorization becomes feasible:</strong> small primes reduce the search space, and factoring <code>N</code> can be done with modest computational effort.</li>
+<li><strong>Searchable space of candidate plaintexts:</strong> when the key or plaintext space is small, an attacker can enumerate many candidate decryptions. Among those candidates, the correct plaintext often exhibits natural-language statistical properties (letter frequencies, common digrams/trigrams, word patterns) that make it distinguishable.</li>
+</ul>
+
+
+<p>In practice, a statistical recognition strategy works like this (high-level): an attacker that obtains many candidate decryptions scores each candidate for how closely it matches expected language statistics (for example English letter frequencies, expected bigram counts, or language models). The candidate with the best statistical fit is considered the most plausible plaintext. This is a recognition problem rather than a purely mathematical factorization: it exploits the fact that real plaintexts are not uniform random bytes but contain structure.</p>
+
+
+<p>Important caveats:</p>
+<ul>
+<li>This method assumes the attacker can produce many candidate decryptions (small keyspace, weak padding, or other weaknesses that allow enumeration).</li>
+<li>Modern secure deployments mitigate such attacks by using long keys (e.g., 2048+ bit RSA) and secure padding schemes (OAEP) and by combining encryption with integrity (e.g., authenticated encryption or MACs).</li>
+</ul>
+
+
+<h3>Defensive recommendations (best practices)</h3>
+<ul>
+<li>Use strong, modern key sizes and algorithms. For RSA, current best practice is to favor alternatives (e.g., elliptic-curve-based schemes) or at minimum use RSA with 2048+ bit moduli if required by legacy systems.</li>
+<li>Always use secure padding (OAEP for RSA encryption) and authenticated modes for symmetric encryption (e.g., AES-GCM) to prevent an attacker from reliably testing candidate plaintexts.</li>
+<li>Compress or encode plaintexts before encryption when appropriate: compression or binary formats reduce predictable plaintext structure and make statistical recognition harder.</li>
+<li>Rotate keys and apply defense-in-depth: monitoring, rate-limiting, and careful handling of error messages reduce the usefulness of brute-force or enumeration approaches.</li>
+</ul>
+
+<div class="wrap">
+
+
+<div style="margin-top:12px">
+<strong>Key info (demo)</strong>
+<pre id="keyInfo">No key generated yet.</pre>
+</div>
+
+
+</div>
+
+
+<div class="col" style="flex:0.85">
+<div class="panel">
+<strong>Ciphertext (array of numbers)</strong>
+<pre id="cipherText">[]</pre>
+<p style="margin-top:8px; font-size:14px; color:#334155">The ciphertext is shown as an array of integers. Each integer is the result of encrypting a single character code with <code>c = m^e mod n</code>. This simple packing is used here for clarity.</p>
+</div>
+
+
+<div style="margin-top:12px" class="panel">
+<strong>Live letter-frequency chart (A–Z)</strong>
+<canvas id="freqChart" width="700" height="220"></canvas>
+<p style="font-size:13px; color:#334155; margin-top:6px">When you click <em>Decrypt</em> the chart will animate from zero to the observed frequencies of letters in the decrypted text — showing how a plaintext stands out from random noise.</p>
+</div>
+</div>
+</div>
+</section>
+
+
+<section>
+<h2>2) How this demonstrates recognition by letter frequencies</h2>
+<p>In the demo above, an attacker who can try candidate decryptions (for example because the keyspace is small) can use a letter-frequency score to pick the most plausible plaintext among many candidates. The chart makes it visible: the decrypted, correct plaintext shows the characteristic non-uniform distribution of letters (e.g., more 'e', 't', 'a' in English), whereas random bytes look uniform.</p>
+<p>Again: this is a recognition strategy and not a direct factoring algorithm — it helps identify correct plaintexts when enumeration is possible.</p>
+</section>
+
+
+<footer>
+<p>If you want, I can: (a) export this interactive page as a single downloadable .html file, (b) adapt the UI for your blog theme (colors/size), or (c) replace the simple per-character RSA with block packing and better UTF-8 handling. Tell me which option and I'll update the file.</p>
+</footer>
+</div>
+
+
+</section>
+
+
+
+
+
+    </article>
+
+
+
+
+</main>
+
+    <footer>
+        <p>&copy; 2025 Il Mio Blog — Tutti i diritti riservati.</p>
+    </footer>   
+
+    <script>
+        // --- Helper big-integer RSA functions using BigInt ---
+
+
+function animateTo(targetFreqs, duration=800) {
+const start = performance.now();
+const initial = new Array(26).fill(0);
+function step(now){
+const t = Math.min(1, (now - start) / duration);
+const current = initial.map((v,i)=> v + (targetFreqs[i]-v)*t);
+drawBars(current);
+if (t < 1) requestAnimationFrame(step);
+}
+requestAnimationFrame(step);
+}
+
+
+genKeyBtn.addEventListener('click', ()=>{
+try {
+const bits = Number(primeSizeEl.value);
+const e = BigInt(Number(pubExpEl.value));
+// generate two distinct small primes
+const p = generateSmallPrime(bits);
+let q = generateSmallPrime(bits);
+while (q === p) q = generateSmallPrime(bits);
+const n = p * q;
+const phi = (p - 1n) * (q - 1n);
+const d = modInv(e, phi);
+if (d === null) throw new Error('failed to compute modular inverse; try different e');
+state.key = {p, q, n, e, d};
+// encrypt per-character
+const pt = plaintextEl.value;
+const codes = strToCharCodes(pt);
+const ciphertext = codes.map(c => {
+const m = BigInt(c);
+return modPow(m, e, n).toString();
+});
+state.ciphertext = ciphertext;
+cipherTextEl.textContent = JSON.stringify(ciphertext.slice(0,200), null, 2);
+keyInfoEl.textContent = `p = ${p}
+q = ${q}
+n (modulus) = ${n}
+e = ${e}
+d = ${d}`;
+decryptBtn.disabled = false;
+state.decrypted = null;
+
+
+// Show letter frequency of plaintext as a preview annotation (but chart stays empty until decrypt)
+drawBars(new Array(26).fill(0));
+alert('Key generated and plaintext encrypted. Click "Decrypt" to reveal plaintext and animate the frequency chart.');
+} catch (err) {
+alert('Error generating key: ' + err.message);
+}
+});
+
+
+decryptBtn.addEventListener('click', ()=>{
+if (!state.key || !state.ciphertext.length) return alert('No ciphertext available');
+// decrypt
+const d = state.key.d;
+const n = state.key.n;
+const codes = state.ciphertext.map(cStr => {
+const c = BigInt(cStr);
+const m = modPow(c, d, n);
+return Number(m);
+});
+const pt = codesToStr(codes);
+state.decrypted = pt;
+// display
+cipherTextEl.textContent = JSON.stringify(state.ciphertext.slice(0,200), null, 2) + '
+
+
+-- Decrypted plaintext --
+' + pt;
+// compute frequencies and animate chart
+const freqs = computeLetterFrequencies(pt);
+animateTo(freqs, 1000);
+decryptBtn.disabled = true; // one-time press for demo
+});
+
+
+resetBtn.addEventListener('click', ()=>{
+state = {key:null, ciphertext:[], decrypted:null};
+keyInfoEl.textContent = 'No key generated yet.';
+cipherTextEl.textContent = '[]';
+drawBars(new Array(26).fill(0));
+decryptBtn.disabled = true;
+});
+
+
+// expose state for debugging (optional)
+window.demoState = state;
+
+      
+    </script>
+
+</body>
+</html>
+
+
