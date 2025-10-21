@@ -203,227 +203,57 @@
 
 
 <script>
+        // choose prime numbers
+        let p=11,q=13;
 
-let state = { key: null, ciphertext: [], decrypted: null };
+        let privateKey, publicKey, n, phi;
+        function gcd(a, b) {
+            if (b === 0) return a;
+            return gcd(b, a % b);
+        }
 
-        // --- Helper big-integer RSA functions using BigInt ---
+        n = p * q; // modulus
+        phi = (p - 1) * (q - 1); // totient
+        let e = 7; // public exponent
 
+        // Ensure that e is coprime to phi and n
+        while (gcd(e, phi) !== 1) {
+            e += 2; // increment e to find a coprime
+        }
 
-function generateKey(bits) {
-  let p, q, n, phi, e, d;
-  do {
-    p = generateSmallPrime(bits);
-    q = generateSmallPrime(bits);
-    while (q === p) q = generateSmallPrime(bits);
-    n = p * q;
-    phi = (p - 1n) * (q - 1n);
-    e = 3n;
-    while (egcd(e, phi).g !== 1n) e += 2n;
-    d = modInv(e, phi);
-  } while (d === null);
-  return { p, q, n, e, d };
-}
-function computeLetterFrequencies(text) {
-  const counts = new Array(26).fill(0);
-  let total = 0;
-  for (const ch of text.toUpperCase()) {
-    const idx = ch.charCodeAt(0) - 65; // A=65
-    if (idx >= 0 && idx < 26) {
-      counts[idx]++;
-      total++;
-    }
-  }
-  return total > 0 ? counts.map(c => c / total) : counts;
-}
-const ctx = document.getElementById('freqChart').getContext('2d');
-let chart;
+        // Calculate d, the modular multiplicative inverse of e mod phi
+        function modInverse(e, phi) {
+            let m0 = phi, t, q;
+            let x0 = 0, x1 = 1;
 
-function drawBars(freqs) {
-  const labels = Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i));
-  if (!chart) {
-    chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Letter frequency',
-          data: freqs,
-          backgroundColor: '#60a5fa'
-        }]
-      },
-      options: {
-        animation: false,
-        scales: { y: { beginAtZero: true, max: 0.2 } }
-      }
-    });
-  } else {
-    chart.data.datasets[0].data = freqs;
-    chart.update();
-  }
-}
+            if (phi === 1) return 0;
 
-function isProbablePrime(n) {
-    if (n < 2n) return false;
-    if (n % 2n === 0n) return n === 2n;
-    // small deterministic trial division (sufficient for small bit sizes used here)
-    for (let i = 3n; i * i <= n; i += 2n) {
-      if (n % i === 0n) return false;
-    }
-    return true;
-  }
+            while (e > 1) {
+                q = Math.floor(e / phi);
+                t = phi;
 
-  function randBetween(min, max) {
-    // inclusive random BigInt between min and max (works for small ranges)
-    const range = max - min + 1n;
-    const rand = BigInt(Math.floor(Math.random() * Number(range)));
-    return min + rand;
-  }
+                phi = e % phi;
+                e = t;
+                t = x0;
 
-  function generateSmallPrime(bits) {
-    const min = 1n << BigInt(bits - 1);
-    const max = (1n << BigInt(bits)) - 1n;
-    // try random candidates first
-    for (let attempt = 0; attempt < 2000; attempt++) {
-      let cand = randBetween(min, max);
-      if ((cand & 1n) === 0n) cand += 1n; // make odd
-      if (isProbablePrime(cand)) return cand;
-    }
-    // fallback linear scan
-    for (let p = min | 1n; p <= max; p += 2n) {
-      if (isProbablePrime(p)) return p;
-    }
-    throw new Error('no prime found in range');
-  }
+                x0 = x1 - q * x0;
+                x1 = t;
+            }
 
-  function egcd(a, b) {
-    if (b === 0n) return { g: a, x: 1n, y: 0n };
-    const { g, x: x1, y: y1 } = egcd(b, a % b);
-    return { g, x: y1, y: x1 - (a / b) * y1 };
-  }
+            if (x1 < 0) x1 += m0;
 
-  function modInv(a, m) {
-    const { g, x } = egcd(a, m);
-    if (g !== 1n) return null;
-    return ((x % m) + m) % m;
-  }
+            return x1;
+        }
 
-  function modPow(base, exp, mod) {
-    base = base % mod;
-    let result = 1n;
-    while (exp > 0n) {
-      if (exp & 1n) result = (result * base) % mod;
-      base = (base * base) % mod;
-      exp >>= 1n;
-    }
-    return result;
-  }
-
-  // simple per-character encoding (ASCII)
-  function strToCodes(s) {
-    const out = [];
-    for (let i = 0; i < s.length; i++) out.push(s.charCodeAt(i));
-    return out;
-  }
-  function codesToStr(arr) {
-    return String.fromCharCode(...arr);
-  }
-const primeSizeEl = document.getElementById('primeSize');
-const pubExpEl = document.getElementById('pubExp');
-const genKeyBtn = document.getElementById('genKeyBtn');
-const decryptBtn = document.getElementById('decryptBtn');
-const cipherTextEl = document.getElementById('cipherText');
-const keyInfoEl = document.getElementById('keyInfo');
-const plaintextEl = document.getElementById('aliceText');
-const resetBtn = document.getElementById('resetBtn');
+        let d = modInverse(e, phi); // private exponent
 
 
-function animateTo(targetFreqs, duration=800) {
-const start = performance.now();
-const initial = new Array(26).fill(0);
-function step(now){
-const t = Math.min(1, (now - start) / duration);
-const current = initial.map((v,i)=> v + (targetFreqs[i]-v)*t);
-drawBars(current);
-if (t < 1) requestAnimationFrame(step);
-}
-requestAnimationFrame(step);
-}
+        console.log(`Public Key: (e: ${e}, n: ${n})`);
+        console.log(`Private Key: (d: ${d}, n: ${n})`);
+        
 
 
-genKeyBtn.addEventListener('click', ()=>{
-try {
-const bits = Number(primeSizeEl.value);
-const e = BigInt(Number(pubExpEl.value));
-// generate two distinct small primes
-const p = generateSmallPrime(bits);
-let q = generateSmallPrime(bits);
-while (q === p) q = generateSmallPrime(bits);
-const n = p * q;
-const phi = (p - 1n) * (q - 1n);
-const d = modInv(e, phi);
-if (d === null) throw new Error('failed to compute modular inverse; try different e');
-state.key = generateKey(bits);
-// encrypt per-character
-const pt = plaintextEl.value;
-const codes = strToCodes(pt);
-const ciphertext = codes.map(c => {
-const m = BigInt(c);
-return modPow(m, e, n).toString();
-});
-state.ciphertext = ciphertext;
-cipherTextEl.textContent = JSON.stringify(ciphertext.slice(0,200), null, 2);
-keyInfoEl.textContent = `p = ${p}
-q = ${q}
-n (modulus) = ${n}
-e = ${e}
-d = ${d}`;
-decryptBtn.disabled = false;
-state.decrypted = null;
-
-
-// Show letter frequency of plaintext as a preview annotation (but chart stays empty until decrypt)
-drawBars(new Array(26).fill(0));
-alert('Key generated and plaintext encrypted. Click "Decrypt" to reveal plaintext and animate the frequency chart.');
-} catch (err) {
-alert('Error generating key: ' + err.message);
-}
-});
-
-
-decryptBtn.addEventListener('click', ()=>{
-if (!state.key || !state.ciphertext.length) return alert('No ciphertext available');
-// decrypt
-const d = state.key.d;
-const n = state.key.n;
-const codes = state.ciphertext.map(cStr => {
-const c = BigInt(cStr);
-const m = modPow(c, d, n);
-return Number(m);
-});
-const pt = codesToStr(codes);
-state.decrypted = pt;
-// display
-cipherTextEl.textContent = `${JSON.stringify(state.ciphertext.slice(0, 200), null, 2)}
-
--- Decrypted plaintext --
-${pt}`;
-// compute frequencies and animate chart
-const freqs = computeLetterFrequencies(pt);
-animateTo(freqs, 1000);
-decryptBtn.disabled = true; // one-time press for demo
-});
-
-
-resetBtn.addEventListener('click', ()=>{
-state = {key:null, ciphertext:[], decrypted:null};
-keyInfoEl.textContent = 'No key generated yet.';
-cipherTextEl.textContent = '[]';
-drawBars(new Array(26).fill(0));
-decryptBtn.disabled = true;
-});
-
-      
-    </script>
+</script>
 
 </body>
 </html>
