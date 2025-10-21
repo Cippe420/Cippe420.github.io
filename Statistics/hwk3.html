@@ -133,12 +133,32 @@
                     <li>Compress or encode plaintexts before encryption when appropriate: compression or binary formats reduce predictable plaintext structure and make statistical recognition harder.</li>
                     <li>Rotate keys and apply defense-in-depth: monitoring, rate-limiting, and careful handling of error messages reduce the usefulness of brute-force or enumeration approaches.</li>
                 </ul>
-
+<div class="alice-demo" style="max-width:800px;margin:18px auto;padding:16px;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(2,6,23,0.06);">
+  <h3>Alice excerpt (public domain)</h3>
+  <div id="aliceText" style="padding:12px;background:#f8fafc;border-radius:6px;line-height:1.5;">
+    <!-- public-domain excerpt from Lewis Carroll -->
+    Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do:
+    once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it,
+    'and what is the use of a book,' thought Alice 'without pictures or conversation?'
+  </div>
                 <div class="wrap">
                     <div style="margin-top:12px">
                         <strong>Key info (demo)</strong>
                         <pre id="keyInfo">No key generated yet.</pre>
                     </div>
+                    <div style="margin-top:12px">
+                        <label for="primeSize">Prime size (bits): </label>
+                        <input type="number" id="primeSize" value="8" min="4" max="16" step="1" style="width:60px">
+                        <label for="pubExp" style="margin-left:12px">Public exponent (e): </label>
+                        <input type="number" id="pubExp" value="3" min="3" step="2" style="width:60px">
+                        <button id="genKeyBtn" style="margin-left:12px">Generate Key & Encrypt</button>
+                </div>
+
+                    <div style="margin-top:12px">
+                        <button id="decryptBtn" disabled>Decrypt</button>
+                        <button id="resetBtn" style="margin-left:12px">Reset</button>
+                    </div>
+
                 </div>
 
                 <div class="col" style="flex:0.85">
