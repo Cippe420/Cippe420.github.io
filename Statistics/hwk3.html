@@ -192,7 +192,71 @@
 
 <script>
         // --- Helper big-integer RSA functions using BigInt ---
+function isProbablePrime(n) {
+    if (n < 2n) return false;
+    if (n % 2n === 0n) return n === 2n;
+    // small deterministic trial division (sufficient for small bit sizes used here)
+    for (let i = 3n; i * i <= n; i += 2n) {
+      if (n % i === 0n) return false;
+    }
+    return true;
+  }
 
+  function randBetween(min, max) {
+    // inclusive random BigInt between min and max (works for small ranges)
+    const range = max - min + 1n;
+    const rand = BigInt(Math.floor(Math.random() * Number(range)));
+    return min + rand;
+  }
+
+  function generateSmallPrime(bits) {
+    const min = 1n << BigInt(bits - 1);
+    const max = (1n << BigInt(bits)) - 1n;
+    // try random candidates first
+    for (let attempt = 0; attempt < 2000; attempt++) {
+      let cand = randBetween(min, max);
+      if ((cand & 1n) === 0n) cand += 1n; // make odd
+      if (isProbablePrime(cand)) return cand;
+    }
+    // fallback linear scan
+    for (let p = min | 1n; p <= max; p += 2n) {
+      if (isProbablePrime(p)) return p;
+    }
+    throw new Error('no prime found in range');
+  }
+
+  function egcd(a, b) {
+    if (b === 0n) return { g: a, x: 1n, y: 0n };
+    const { g, x: x1, y: y1 } = egcd(b, a % b);
+    return { g, x: y1, y: x1 - (a / b) * y1 };
+  }
+
+  function modInv(a, m) {
+    const { g, x } = egcd(a, m);
+    if (g !== 1n) return null;
+    return ((x % m) + m) % m;
+  }
+
+  function modPow(base, exp, mod) {
+    base = base % mod;
+    let result = 1n;
+    while (exp > 0n) {
+      if (exp & 1n) result = (result * base) % mod;
+      base = (base * base) % mod;
+      exp >>= 1n;
+    }
+    return result;
+  }
+
+  // simple per-character encoding (ASCII)
+  function strToCodes(s) {
+    const out = [];
+    for (let i = 0; i < s.length; i++) out.push(s.charCodeAt(i));
+    return out;
+  }
+  function codesToStr(arr) {
+    return String.fromCharCode(...arr);
+  }
 const primeSizeEl = document.getElementById('primeSize');
 const pubExpEl = document.getElementById('pubExp');
 const genKeyBtn = document.getElementById('genKeyBtn');
