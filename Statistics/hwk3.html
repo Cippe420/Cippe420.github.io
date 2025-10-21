@@ -203,10 +203,26 @@
 
 
 <script>
+
 let state = { key: null, ciphertext: [], decrypted: null };
 
         // --- Helper big-integer RSA functions using BigInt ---
 
+
+function generateKey(bits) {
+  let p, q, n, phi, e, d;
+  do {
+    p = generateSmallPrime(bits);
+    q = generateSmallPrime(bits);
+    while (q === p) q = generateSmallPrime(bits);
+    n = p * q;
+    phi = (p - 1n) * (q - 1n);
+    e = 3n;
+    while (egcd(e, phi).g !== 1n) e += 2n;
+    d = modInv(e, phi);
+  } while (d === null);
+  return { p, q, n, e, d };
+}
 function computeLetterFrequencies(text) {
   const counts = new Array(26).fill(0);
   let total = 0;
@@ -318,6 +334,7 @@ const decryptBtn = document.getElementById('decryptBtn');
 const cipherTextEl = document.getElementById('cipherText');
 const keyInfoEl = document.getElementById('keyInfo');
 const plaintextEl = document.getElementById('aliceText');
+const resetBtn = document.getElementById('resetBtn');
 
 
 function animateTo(targetFreqs, duration=800) {
@@ -345,7 +362,7 @@ const n = p * q;
 const phi = (p - 1n) * (q - 1n);
 const d = modInv(e, phi);
 if (d === null) throw new Error('failed to compute modular inverse; try different e');
-state.key = {p, q, n, e, d};
+state.key = generateKey(bits);
 // encrypt per-character
 const pt = plaintextEl.value;
 const codes = strToCodes(pt);
