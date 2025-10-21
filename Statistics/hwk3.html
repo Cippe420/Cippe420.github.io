@@ -193,6 +193,14 @@
 <script>
         // --- Helper big-integer RSA functions using BigInt ---
 
+const primeSizeEl = document.getElementById('primeSize');
+const pubExpEl = document.getElementById('pubExp');
+const genKeyBtn = document.getElementById('genKeyBtn');
+const decryptBtn = document.getElementById('decryptBtn');
+const plaintextEl = document.getElementById('plaintext');
+const cipherTextEl = document.getElementById('cipherText');
+const keyInfoEl = document.getElementById('keyInfo');
+
 
 function animateTo(targetFreqs, duration=800) {
 const start = performance.now();
