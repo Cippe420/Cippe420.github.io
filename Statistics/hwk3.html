@@ -36,7 +36,37 @@
             color: #111;
             margin-bottom: 0.5rem;
         }
+.table-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
 
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    thead {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #e0f7e0;
+    }
         .post-meta {
             color: #777;
             font-size: 0.9rem;
@@ -144,45 +174,23 @@
         once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it,
         'and what is the use of a book,' thought Alice 'without pictures or conversation?'
       </div>
-
-      <div class="wrap">
-        <div style="margin-top:12px">
-          <strong>Key info (demo)</strong>
-          <pre id="keyInfo">No key generated yet.</pre>
-        </div>
-
-        <div style="margin-top:12px">
-          <label for="primeSize">Prime size (bits): </label>
-          <input type="number" id="primeSize" value="8" min="4" max="16" step="1" style="width:60px">
-          <label for="pubExp" style="margin-left:12px">Public exponent (e): </label>
-          <input type="number" id="pubExp" value="3" min="3" step="2" style="width:60px">
-          <button id="genKeyBtn" style="margin-left:12px">Generate Key & Encrypt</button>
-        </div>
-
-        <div style="margin-top:12px">
-          <button id="decryptBtn" disabled>Decrypt</button>
-          <button id="resetBtn" style="margin-left:12px">Reset</button>
-        </div>
-      </div> <!-- end .wrap -->
-
+	<button id="encryptBtn" style="margin-top:12px;padding:8px 16px;background:#3b82f6;color:white;border:none;border-radius:4px;cursor:pointer;" onclick= "encryptTextRSA(document.getElementById('aliceText').innerText,e,n);">Encrypt</button>
       <div class="col" style="flex:0.85">
         <div class="panel">
           <strong>Ciphertext (array of numbers)</strong>
-          <pre id="cipherText">[]</pre>
+	<div id="cipherText"></div>
           <p style="margin-top:8px; font-size:14px; color:#334155">
             The ciphertext is shown as an array of integers. Each integer is the result of encrypting a single character code with
             <code>c = m^e mod n</code>. This simple packing is used here for clarity.
           </p>
+	
         </div>
-
-        <div style="margin-top:12px" class="panel">
-          <strong>Live letter-frequency chart (A–Z)</strong>
-          <canvas id="freqChart" width="700" height="220"></canvas>
-          <p style="font-size:13px; color:#334155; margin-top:6px">
-            When you click <em>Decrypt</em> the chart will animate from zero to the observed frequencies of letters in the decrypted text — showing how a plaintext stands out from random noise.
-          </p>
-        </div>
-      </div> <!-- end .col -->
+	<div>
+	  <strong>Note:</strong> To demonstrate the statistical recognition attack, we need to implement a decryption function that tries all possible keys (given the small key size) and scores each resulting plaintext based on letter frequency analysis. The plaintext with the highest score would be selected as the most likely correct decryption. We of course know the public key, so we can search for a feasible private key and generate many candidates plaintext and score them.
+	</div>
+	<button onclick='generateCandidatePlaintexts();'>Generate Candidate Plaintexts</button>
+	
+	 </div> <!-- end .col -->
     </div> <!-- end .alice-demo -->
     <!-- END Alice RSA demo -->
   </section>
@@ -192,6 +200,22 @@
     <p>In the demo above, an attacker who can try candidate decryptions (for example because the keyspace is small) can use a letter-frequency score to pick the most plausible plaintext among many candidates. The chart makes it visible: the decrypted, correct plaintext shows the characteristic non-uniform distribution of letters (e.g., more 'e', 't', 'a' in English), whereas random bytes look uniform.</p>
     <p>Again: this is a recognition strategy and not a direct factoring algorithm — it helps identify correct plaintexts when enumeration is possible.</p>
   </section>
+    <div> Once we calculate the chi squared scores for each candidate plaintext, we can identify the most likely correct decryption by selecting the one with the lowest score. This approach leverages the statistical properties of natural language to distinguish the correct plaintext from incorrect candidates. In my example, the candidate plaintext generated using d=43 produced the lowest chi squared score, indicating it is the most likely correct decryption of the ciphertext. This demonstrates how statistical analysis can be effectively used to break weak RSA encryption by recognizing patterns in the decrypted text.
+    </div>
+                <div class="table-container">
+    <table id="chiTable">
+      <thead>
+        <tr>
+          <th>Indice</th>
+          <th>Chi Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Le righe verranno generate qui -->
+      </tbody>
+    </table>
+  </div>
+
 </article>
 
     </main>
@@ -205,8 +229,15 @@
 <script>
         // choose prime numbers
         let p=11,q=13;
-
+	let ciphertext = [];
         let privateKey, publicKey, n, phi;
+	const ENG_FREQ = {
+  A:0.082, B:0.015, C:0.028, D:0.043, E:0.13, F:0.022, G:0.02, H:0.061,
+  I:0.07, J:0.002, K:0.008, L:0.04, M:0.024, N:0.067, O:0.075, P:0.019,
+  Q:0.001, R:0.06, S:0.063, T:0.091, U:0.028, V:0.01, W:0.023, X:0.001,
+  Y:0.02, Z:0.0007
+};
+	let candidatePlaintexts = [];
         function gcd(a, b) {
             if (b === 0) return a;
             return gcd(b, a % b);
@@ -254,7 +285,96 @@
 
         console.log(`Public Key: (e: ${e}, n: ${n})`);
         console.log(`Private Key: (d: ${d}, n: ${n})`);
-        
+
+	const outputDiv = document.getElementById('cipherText');
+
+        function encryptTextRSA(plaintext, e, n) {
+        ciphertext = [];
+	console.log("Encrypting text with RSA...");
+	console.log('plaintext:', plaintext);
+	outputDiv.textContent = '';
+            for (let char of plaintext) {
+                let m = char.charCodeAt(0);
+                let c = BigInt(m) ** BigInt(e) % BigInt(n);
+                ciphertext.push(c);
+            }
+
+	outputDiv.textContent = ciphertext.map(x => x.toString()).join(' ');
+            return ciphertext;
+        }
+
+        function decryptTextRSA(ciphertext, d, n) {
+            let plaintext = '';
+            for (let c of ciphertext) {
+                let m = BigInt(c) ** BigInt(d) % BigInt(n);
+                plaintext += String.fromCharCode(Number(m));
+            }
+            return plaintext;
+        }    
+
+	function generateCandidatePlaintexts() {
+            let scoreDictionary = {};
+	    console.log("Generating candidate plaintexts by trying all possible private keys...");
+	    candidatePlaintexts = [];
+	    for (let possibleD = 1; possibleD < n; possibleD++) {
+		let candidatePlaintext = decryptTextRSA(ciphertext, possibleD, n);
+		candidatePlaintexts.push({d: possibleD, text: candidatePlaintext});
+                scorePlaintext(candidatePlaintext,possibleD);
+                scoreDictionary[possibleD] = scorePlaintext(candidatePlaintext,possibleD);
+                if (possibleD === 43) {
+                    console.log(`Candidate plaintext for d=${possibleD}: ${candidatePlaintext}`);
+                }
+	    }
+	    console.log(`Generated dictionary of scores for candidate plaintexts:`,scoreDictionary);
+            // Sort the scoreDictionary by score values in ascending order
+            // ottieni array ordinato per score crescente
+            const top5Entries = Object.entries(scoreDictionary)
+              .sort((a, b) => a[1] - b[1])
+              .slice(0, 5);
+
+            console.log('Top5 (array):', top5Entries);
+            // stampa ordinata correttamente
+            for (const [key, score] of top5Entries) {
+              console.log(`${key}: ${score}`);
+            }
+
+            const tbody = document.querySelector("#chiTable tbody");
+
+    // Genera una riga per ogni coppia chiave-valore
+            for (const [indice, score] of Object.entries(top5Entries)) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${score[0]}</td>
+        <td>${score[1]}</td>
+      `;
+      tbody.appendChild(row);
+    }
+
+	
+	}
+
+        function scorePlaintext(plaintext,index) {
+            let score = 0;
+            let letterCounts = {};
+            let totalLetters = 0;
+
+            for (let char of plaintext.toUpperCase()) {
+                if (char >= 'A' && char <= 'Z') {
+                    letterCounts[char] = (letterCounts[char] || 0) + 1;
+                    totalLetters++;
+                }
+            }
+
+            for (let letter in ENG_FREQ) {
+                let observedFreq = (letterCounts[letter] || 0) / totalLetters;
+                score += Math.abs(observedFreq - ENG_FREQ[letter]);
+            }
+            console.log(`Score for plaintext "${index}": ${score}`);
+            return score;
+        }
+
+
+
 
 
 </script>
