@@ -1,48 +1,47 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Statistics -- Homeworks</title>
+  <title>Statistics — Homeworks</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
+
     <!-- Barra laterale -->
     <aside class="sidebar">
-      <h2>📚 Homework 1</h2>
+      <h1 class="sidebar-title">📘 Statistics</h1>
       <nav>
         <ul>
-          <li><a href="hwk1.html">Homework 1<br><small>Statistica e Cybersecurity</small></a></li>
+          <li><a href="hwk1.html" target="content">Homework 1<br><small>Statistica e Cybersecurity</small></a></li>
+          <li><a href="hwk2.html" target="content">Homework 2<br><small>Breaking Caesar's Cypher</small></a></li>
+          <li><a href="hwk3.html" target="content">Homework 3<br><small>Breaking RSA Cypher</small></a></li>
+          <li><a href="hwk4.html" target="content">Homework 4<br><small>LLN Demonstration</small></a></li>
         </ul>
       </nav>
-      <h2>📚 Homework 2</h2>
-      <nav>
-        <ul>
-          <li><a href="hwk2.html">Homework 2<br><small>Breaking Caesar's Cypher</small></a></li>
-        </ul>
-      <h2>📚 Homework 3</h2>
-      <nav>
-        <ul>
-          <li><a href="hwk3.html">Homework 3<br><small>Breaking RSA Cypher</small></a></li>
-        </ul>
-
     </aside>
 
     <!-- Contenuto principale -->
     <main class="main-content">
-      <header>
-        <h1>Homework del corso di Statistics </h1>
+      <header class="main-header">
+        <h1>Statistics — Course Homeworks</h1>
+        <p>Explore interactive assignments and statistical concepts.</p>
       </header>
 
-      <section>
-        <p>Benvenuto nella sezione dedicata ai miei homework del corso di Statistica.  
-        Puoi selezionare un compito dalla barra laterale per visualizzarlo.</p>
+      <section class="intro">
+        <p>
+          Welcome to my collection of homework assignments for the <strong>Statistics</strong> course.  
+          Use the sidebar to navigate through each topic — from classical ciphers to probabilistic simulations.
+        </p>
       </section>
 
-      <iframe name="content" class="content-frame" src="hwk1.html"></iframe>
+      <div class="iframe-container">
+        <iframe name="content" src="hwk1.html" class="content-frame" loading="lazy"></iframe>
+      </div>
     </main>
   </div>
 </body>
 </html>
+

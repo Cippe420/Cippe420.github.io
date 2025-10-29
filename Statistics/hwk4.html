@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Titolo del post del blog">
+    <title>Demonstrating the Law of Large Numbers</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        article h1 {
+            color: #111;
+            margin-bottom: 0.5rem;
+        }
+.table-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    thead {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #e0f7e0;
+    }
+        .post-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        article img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #222;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .riquadro-testo {
+            width: 400px;
+            padding: 20px;
+            margin: 40px auto;
+            background-color: #f8f9fa;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        /* Added styles for classes referenced in the HTML */
+        .wrap {
+            margin-top: 20px;
+        }
+        .panel {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .col {
+            flex: 0.85;
+        }
+
+        .warning {
+            background: #fff8e6;
+            padding: 12px;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Homework 3</h1>
+    </header>
+
+    <main>
+      <article>
+        <h1> Demonstrating the LLN with coin tosses </h1>
+        <div class="post-meta">
+           The Law of Large Numbers (LLN) is one of the fundamental principles of probability and statistics.
+In simple terms, it states that the more times you repeat a random experiment, the closer the average of your results will get to the expected (theoretical) value. 
+        </div>
+        <h2> The Basic Idea </h2>
+        <p>Imagine flipping a fair coin.
+The probability of getting heads is 50%, or 0.5.
+          However, if you flip it only a few times, the results might look very different: </p>
+        <ul>
+  <li>After 5 flips, you might get 4 heads → 4/5 = 0.8</li>
+  <li>After 10 flips, maybe 7 heads → 7/10 = 0.7</li>
+  <li>After 1,000 flips, the proportion of heads will likely be very close to 0.5</li>
+</ul>
+        <p>As you increase the number of flips, the proportion of heads will converge to the expected value of 0.5.</p>
+        <h2> Simulating Coin Tosses </h2>
+        <p>To illustrate the LLN, we can simulate flipping a coin multiple times and track the proportion of heads over time.</p>
+        <div id="summaryBox" style="
+    margin-top: 20px; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 8px; 
+    max-width: 400px;
+    background-color: #f9f9f9;">
+  <h4>Simulation Summary</h4>
+  <p>Total simulations run: <span id="totalSimulations">0</span></p>
+  <p>Total heads observed: <span id="totalHeads">0</span></p>
+  <p>Overall average proportion of heads: <span id="overallAverage">0.00</span></p>
+</div>
+        <label for="numTosses">Choose number of tosses:</label>
+        <input type="number" id="numTosses" value="1000" min="1" max="1000000" step="1">
+        <button onclick="runSimulations(document.getElementById('numTosses').value)">Run simulation</button>
+
+    <div id="chartBox" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 500px;
+    height: 300px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    padding: 10px;
+    z-index: 1000;
+">
+  <canvas id="coinChart" width="480" height="260"></canvas>
+</div>
+
+        <div style="border:1px solid #ddd;padding:18px;border-radius:10px;background:#fbfbfb;max-width:900px;font-family:Arial,Helvetica,sans-serif;">
+  <h3 style="margin-top:0">Statistical Principles Behind the Simulation</h3>
+
+  <h4>1. Expected Value</h4>
+  <p>
+    The <strong>expected value</strong> of a random variable is its theoretical “center” — the average outcome we would expect if we could repeat the experiment infinitely many times.  
+    For a fair coin, if we define X = 1 for heads and X = 0 for tails, then:
+  </p>
+  <p style="margin-left:12px;"><code>E[X] = 1·P(X=1) + 0·P(X=0) = 1·0.5 + 0·0.5 = 0.5</code></p>
+
+  <h4>2. Sample Mean</h4>
+  <p>
+    The <strong>sample mean</strong> is the average of the observed results in one simulation.  
+    If you flip the coin <em>n</em> times and get outcomes X₁, X₂, ..., Xₙ (each either 1 or 0), then the sample mean is:
+  </p>
+  <p style="margin-left:12px;"><code>Ȳₙ = (X₁ + X₂ + ... + Xₙ) / n</code></p>
+  <p>
+    This value represents the proportion of heads in that single run.  
+    The <strong>Law of Large Numbers (LLN)</strong> tells us that as n → ∞, Ȳₙ → E[X] (in this case, 0.5).
+  </p>
+
+  <h4>3. Variance and Random Fluctuations</h4>
+  <p>
+    The <strong>variance</strong> measures how much the results tend to vary around the expected value.  
+    For a fair coin (a Bernoulli variable), the variance is:
+  </p>
+  <p style="margin-left:12px;"><code>Var(X) = p(1 − p) = 0.5·0.5 = 0.25</code></p>
+  <p>
+    The higher the variance, the more the sample mean can fluctuate from one experiment to another.  
+    Increasing the number of flips reduces the impact of this random variability.
+  </p>
+
+  <h4>4. Increasing the Number of Flips (Single Simulation)</h4>
+  <p>
+    When you perform <strong>one long simulation</strong> and keep increasing the number of flips <em>n</em>, the running average Ȳₙ gradually stabilizes around 0.5.  
+    That’s the essence of the Law of Large Numbers: individual outcomes are unpredictable, but their long-term average becomes predictable.
+  </p>
+  <p style="margin-left:12px;">
+    In practice: for small n, Ȳₙ may deviate strongly from 0.5; for large n, it will almost always stay close to 0.5.
+  </p>
+
+  <h4>5. Many Simulations vs. One Long Simulation</h4>
+  <p>
+    There are two complementary ways to study convergence:
+  </p>
+  <ul>
+    <li><strong>Many short simulations</strong> (e.g., 100 runs of 100 flips each): this shows how much the sample means vary across independent experiments.</li>
+    <li><strong>One long simulation</strong> (e.g., 1 run of 10,000 flips): this shows how the cumulative average within a single experiment converges over time.</li>
+  </ul>
+  <p>
+    Both illustrate the same principle: as the number of total observations grows, random noise averages out.  
+    Combining results from multiple runs is statistically equivalent to doing one long run with the same total number of flips.
+  </p>
+
+  <h4>6. Overall Average Across Multiple Runs</h4>
+  <p>
+    Suppose you perform k simulations, where the i-th simulation has nᵢ flips and produces Hᵢ heads.  
+    The <strong>overall average proportion of heads</strong> across all simulations is:
+  </p>
+  <p style="margin-left:12px;"><code>Overall average = (Σ₍ᵢ₌₁₋ₖ₎ Hᵢ) / (Σ₍ᵢ₌₁₋ₖ₎ nᵢ)</code></p>
+  <p>
+    This overall average behaves exactly like the mean from a single experiment of Σ nᵢ total flips.  
+    In other words, by combining multiple simulations, you’re effectively increasing the sample size — and the estimate gets closer to the true expected value (0.5).
+  </p>
+
+  <h4>7. Weak vs. Strong Law of Large Numbers</h4>
+  <p>
+    - <strong>Weak LLN:</strong> the sample mean converges <em>in probability</em> to the expected value (as n grows, the probability that Ȳₙ is close to E[X] approaches 1).<br>
+    - <strong>Strong LLN:</strong> the sample mean converges <em>almost surely</em> (with probability 1) to the expected value as n → ∞.  
+    For practical purposes, both mean that with enough data, the average outcome becomes stable and predictable.
+  </p>
+
+  <h4>8. Connection to the Central Limit Theorem</h4>
+  <p>
+    While the LLN explains why the sample mean converges to the expected value, the <strong>Central Limit Theorem (CLT)</strong> describes <em>how</em> the averages are distributed for large n: they follow an approximately normal distribution, with standard deviation proportional to 1/√n.  
+    This explains why uncertainty decreases as we collect more data.
+  </p>
+
+  <h4>9. Practical Takeaways</h4>
+  <ul>
+    <li>To reduce random noise, increase the number of flips (n) — the error shrinks roughly as 1/√n.</li>
+    <li>To see how much results vary between experiments, run several independent simulations.</li>
+    <li>To get the most accurate estimate, combine all data across simulations — effectively increasing your total sample size.</li>
+  </ul>
+
+  <hr style="border:none;border-top:1px solid #eee;margin:12px 0">
+
+  <p style="font-size:13px;color:#555;margin:0;">
+    <strong>In summary:</strong> Increasing the number of flips in one simulation reduces randomness and makes the sample mean converge to the expected value.  
+    Combining many simulations does the same — it increases the total number of observations, smoothing out fluctuations even more.  
+    Both approaches demonstrate the same deep idea: with enough data, randomness gives way to regularity.
+  </p>
+</div>
+
+
+
+      </article>
+    </main>
+
+    <footer>
+        &copy; 2025 — Your Blog Name
+    </footer>
+
+
+
+<script>
+    // 🔢 Variabili cumulative globali
+let totalSimulations = 0;
+let cumulativeHeads = 0;
+let cumulativeTosses = 0;
+
+    function simulateCoinTosses(numTosses) {
+        numTosses = parseInt(numTosses);
+        const results = [];
+        let headsCount = 0;
+
+        for (let i = 1; i <= numTosses; i++) {
+          const toss = Math.random() < 0.5 ? 'H' : 'T';
+          if (toss === 'H') headsCount++;
+          results.push(headsCount / i);
+        }
+        // Aggiorna le variabili cumulative globali
+       // 🎯 Aggiornamento dei dati cumulativi
+    totalSimulations++;
+    cumulativeHeads += headsCount;
+    cumulativeTosses += numTosses;
+  // Calcolo media complessiva
+    const overallAverage = cumulativeHeads / cumulativeTosses;
+  // Aggiorna il box riassuntivo
+    document.getElementById('totalSimulations').textContent = totalSimulations;
+    document.getElementById('totalHeads').textContent = cumulativeHeads;
+    document.getElementById('overallAverage').textContent = overallAverage.toFixed(4);
+
+
+        return results;
+      }
+
+      function createChart(data) {
+        const ctx = document.getElementById('coinChart').getContext('2d');
+       if (window.coinChartInstance) {
+          window.coinChartInstance.destroy();
+        }
+        window.coinChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: Array.from({ length: data.length }, (_, i) => i + 1),
+            datasets: [{
+              label: 'Proportion of Heads',
+              data: data,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 2,
+              fill: false,
+              tension: 0.1
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Number of Tosses'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Proportion of Heads'
+                },
+                min: 0,
+                max: 1
+              }
+            }
+          }
+        });
+      }
+
+
+      function runSimulations(n) {
+        const results = simulateCoinTosses(n);
+        
+        createChart(results);
+      }
+
+
+      runSimulations(10);
+
+
+</script>
+
+</body>
+</html>
+
+
