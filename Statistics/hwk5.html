@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Titolo del post del blog">
+    <title>Location and dispersion measures</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        article h1 {
+            color: #111;
+            margin-bottom: 0.5rem;
+        }
+
+.stats-container{font-family:system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;max-width:900px;margin:18px auto;padding:16px;gap:18px}
+.stats-panel{background:#fff;border:1px solid #e6e6e6;border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+.stats-panel h2{margin:0 0 12px;font-size:1.15rem}
+.measure{margin-bottom:12px}
+.measure h3{margin:0 0 6px;font-size:1rem}
+.measure p{margin:0 0 8px;line-height:1.45}
+.formula{display:inline-block;background:#f6f7fb;border-radius:6px;padding:6px 8px;font-family:Menlo,Monaco,monospace;font-size:0.95rem}
+.note{font-size:0.9rem;color:#555}
+.label{font-weight:600}
+
+.table-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    thead {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #e0f7e0;
+    }
+        .post-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        article img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #222;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .riquadro-testo {
+            width: 400px;
+            padding: 20px;
+            margin: 40px auto;
+            background-color: #f8f9fa;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        /* Added styles for classes referenced in the HTML */
+        .wrap {
+            margin-top: 20px;
+        }
+        .panel {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .col {
+            flex: 0.85;
+        }
+
+        .warning {
+            background: #fff8e6;
+            padding: 12px;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Homework 5</h1>
+    </header>
+
+    <main>
+      <article>
+        <h1> Location, Central Tendency / Dispersion and Variability </h1>
+        <div class="post-meta">
+          In statistics,“Location” refers to a value that is representative of the “centre” or typical value of a dataset. These measures help summarise a distribution by giving a single value around which data cluster.        
+        </div>
+<div class="stats-container">
+<div id="measures-location" class="stats-panel" role="region" aria-labelledby="loc-heading">
+<h2 id="loc-heading">Measures of Location / Central Tendency</h2>
+
+
+<div class="measure" id="arithmetic-mean">
+<h3>Arithmetic Mean (Average)</h3>
+<p><span class="label">Definition:</span> The arithmetic mean is the sum of all observations divided by the number of observations. It represents the balance point of the dataset, where the total deviation of all values above and below the mean cancels out to zero. In essence, it provides the “average” value that best represents the whole dataset when all values are considered equally important.</p>
+<p class="formula"><code>mean = (x₁ + x₂ + ... + xₙ) / n</code></p>
+<p><span class="label">Use:</span> Best for quantitative interval/ratio data when the distribution is roughly symmetric and without extreme outliers.</p>
+<p class="note"><strong>Advantages:</strong> Uses every data point; algebraically convenient (basis for variance, standard error, many statistical tests). <strong>Limitations:</strong> Very sensitive to outliers and skew; can give a misleading "typical" value for skewed data.</p>
+</div>
+
+
+<div class="measure" id="median">
+<h3>Median</h3>
+<p><span class="label">Definition:</span> The median is the middle value in an ordered dataset. When all observations are arranged from smallest to largest, the median divides the dataset into two equal halves—50% of observations lie below it and 50% above it. For an even number of observations, it is calculated as the average of the two central values. The median is particularly useful when data contain extreme values that could distort the mean, as it depends solely on order rather than magnitude.</p>
+<p class="formula"><code>median = x_{(⌈n/2⌉)} (or average of central two if n is even)</code></p>
+<p><span class="label">Use:</span> Preferred when data are skewed or contain outliers; appropriate for ordinal or continuous data.</p>
+<p class="note"><strong>Advantages:</strong> Robust to extreme values (outliers). <strong>Limitations:</strong> Ignores the magnitudes of values away from the middle — only the order matters; less convenient for algebraic derivation.</p>
+</div>
+
+
+<div class="measure" id="mode">
+<h3>Mode</h3>
+<p><span class="label">Definition:</span> The mode is the most frequently occurring value in a dataset. It represents the data point or category that appears with the greatest frequency. In distributions with one clear peak (unimodal), it indicates the most common observation. When multiple peaks exist, the dataset may be bimodal or multimodal, reflecting multiple groups or patterns within the data.</p>
+<p><span class="label">Use:</span> The only central measure meaningful for nominal (categorical) data; also useful to identify peaks in multimodal distributions.</p>
+<p class="note"><strong>Advantages:</strong> Simple and interpretable for categories; can be used on any data type. <strong>Limitations:</strong> May be non-unique (bimodal, multimodal) or not informative for continuous data where exact repeats are rare.</p>
+</div>
+
+
+<div class="measure" id="geometric-mean">
+<h3>Geometric Mean</h3>
+<p><span class="label">Definition:</span> The geometric mean is the nth root of the product of n positive numbers. It expresses the central tendency of a dataset in multiplicative terms and is especially appropriate for values that change exponentially or represent ratios (e.g., growth rates). Unlike the arithmetic mean, which assumes additive relationships, the geometric mean assumes proportional changes across observations.</p>
+<p class="formula"><code>geometric mean = (∏_{i=1}^{n} x_i)^{1/n}</code></p>
+<p><span class="label">Use:</span> Useful for growth rates, ratios, or data expressed on multiplicative scales (e.g., compound interest, average fold-changes).</p>
+<p class="note"><strong>Advantages:</strong> Represents central tendency on multiplicative scale; less influenced by large multiplicative outliers. <strong>Limitations:</strong> Requires strictly positive values; not appropriate for additive contexts.</p>
+</div>
+
+
+<div class="measure" id="harmonic-mean">
+<h3>Harmonic Mean</h3>
+<p><span class="label">Definition:</span> The harmonic mean is the reciprocal of the arithmetic mean of the reciprocals of all observations. It gives more weight to smaller values and is suitable for datasets involving rates or ratios (like speed or density). It represents the appropriate “average” when each observation contributes equally to a total in reciprocal terms (for instance, equal distances at different speeds).</p>
+<p class="formula"><code>HM = n / Σ(1/x_i)</code></p>
+<p><span class="label">Use:</span> Appropriate when averaging rates or ratios where the denominator is the meaningful quantity (e.g., average speed over equal distances).</p>
+<p class="note"><strong>Advantages:</strong> Correct for certain rate-averaging problems where arithmetic mean would overstate the central tendency. <strong>Limitations:</strong> Requires positive values; sensitive to very small values (near zero).</p>
+</div>
+
+
+<div class="measure" id="trimmed-winsorized">
+<h3>Trimmed Mean &amp; Winsorized Mean</h3>
+<p><span class="label">Definition:</span> A <strong>trimmed mean</strong> is computed after discarding a fixed proportion of the smallest and largest observations before averaging, reducing the influence of outliers. A <strong>winsorized mean</strong> replaces those extreme values with the nearest retained ones rather than removing them. Both methods aim to estimate a stable central value that represents the majority of the dataset, while maintaining robustness to anomalies.</p>
+<p class="label">Use:</p>
+<p class="note">Both are robust alternatives to the arithmetic mean when outliers exist but you still want to use an "average" that benefits from many data points.<br><strong>Advantages:</strong> Reduces influence of extremes while retaining more data than the median. <strong>Limitations:</strong> Requires choosing trimming/winsorizing cutoffs; less standard for inference unless explicitly accounted for.</p>
+</div>
+
+
+<div class="measure" id="weighted-mean">
+<h3>Weighted Mean</h3>
+<p><span class="label">Definition:</span> The weighted mean assigns different levels of importance or frequency to each observation. Each value x_i is multiplied by its corresponding weight w_i, and the sum of weighted values is divided by the sum of the weights. This measure reflects the influence of each observation based on its assigned weight, commonly used in contexts such as survey data or index construction.</p>
+<p class="formula"><code>weighted mean = Σ(w_i x_i) / Σ(w_i)</code></p>
+<p class="note"><strong>Use:</strong> When observations have differing importance or represent different population sizes (survey sampling, index calculation). <strong>Advantages:</strong> Flexible and intuitively matches many real-world aggregation problems. <strong>Limitations:</strong> Requires reliable choice/knowledge of weights; misuse of weights can bias results.</p>
+</div>
+
+
+<div class="measure" id="midrange">
+<h3>Mid-range</h3>
+<p><span class="label">Definition:</span> The mid-range is the arithmetic mean of the maximum and minimum values in a dataset. It represents the midpoint of the entire range of data values. Although it provides a rough estimate of the central location, it can be distorted by extreme outliers because it only considers the two extremes rather than the full distribution of observations.</p>
+<p class="formula"><code>(min + max) / 2</code></p>
+<p class="note"><strong>Use:</strong> Quick summary of central location for symmetric distributions in exploratory analysis. <strong>Advantages:</strong> Very easy to compute. <strong>Limitations:</strong> Extremely sensitive to outliers; ignores all interior data.</p>
+</div>
+</div>
+
+  <div id="measures-dispersion" class="stats-panel" role="region" aria-labelledby="disp-heading">
+<h2 id="disp-heading">Measures of Dispersion / Variability</h2>
+
+
+<div class="measure" id="range">
+<h3>Range</h3>
+<p><span class="label">Definition:</span> The range measures the total spread of a dataset by subtracting the smallest observation from the largest. It provides a quick and simple sense of the total variation but depends entirely on only two data points. Because of this, it is highly affected by outliers and does not describe how values are distributed between the extremes.</p>
+<p class="note"><strong>Use:</strong> Quick, rough measure of total spread. <strong>Advantages:</strong> Simple and intuitive. <strong>Limitations:</strong> Depends only on two values; highly sensitive to outliers; ignores internal distribution.</p>
+</div>
+
+
+<div class="measure" id="iqr">
+<h3>Interquartile Range (IQR)</h3>
+<p><span class="label">Definition:</span> The interquartile range quantifies the spread of the middle 50% of a dataset. It is computed as the difference between the 75th percentile (Q3) and the 25th percentile (Q1). This measure effectively eliminates the influence of outliers and extreme values, showing how concentrated or dispersed the core of the data distribution is.</p>
+<p class="formula"><code>IQR = Q3 - Q1</code></p>
+<p class="note"><strong>Use:</strong> Measures spread of the middle 50% of data; used in boxplots and robust summaries. <strong>Advantages:</strong> Resistant to extreme values and skew. <strong>Limitations:</strong> Ignores tails; not always suited for parametric methods relying on variance.</p>
+</div>
+
+
+<div class="measure" id="variance">
+<h3>Variance</h3>
+<p><span class="label">Definition:</span> Variance measures the average squared distance of each observation from the mean. It reflects how much the values in a dataset deviate, on average, from the mean. Because deviations are squared, larger differences from the mean have a disproportionately higher influence, highlighting datasets with greater variability.</p>
+<p class="formula"><code>σ² = (1/N) Σ (x_i - μ)²</code> (population) &nbsp; | &nbsp; <code>s² = (1/(n-1)) Σ (x_i - x̄)²</code> (sample)</p>
+<p class="note"><strong>Use:</strong> Fundamental in probability and inference (ANOVA, regression, standard error). <strong>Advantages:</strong> Algebraically convenient; additive for independent components. <strong>Limitations:</strong> Units are squared (less intuitive); very sensitive to outliers.</p>
+</div>
+
+
+<div class="measure" id="stddev">
+<h3>Standard Deviation (SD)</h3>
+<p><span class="label">Definition:</span> The standard deviation is the square root of the variance. It represents the average distance between each observation and the mean, expressed in the same units as the data. It gives a clear, interpretable sense of how tightly or widely data are clustered around the mean value.</p>
+<p class="formula"><code>σ = sqrt(σ²)</code> (population), <code>s = sqrt(s²)</code> (sample)</p>
+<p class="note"><strong>Use:</strong> Widely used measure of typical deviation from the mean; when data are approximately normal, ~68% of observations fall within ±1 SD of mean. <strong>Advantages:</strong> Same units as data; works with many statistical models. <strong>Limitations:</strong> Sensitive to outliers; assumes meaningfulness of deviations about the mean.</p>
+</div>
+
+
+<div class="measure" id="mad">
+<h3>Mean Absolute Deviation (MAD)</h3>
+<p><span class="label">Definition:</span> The mean absolute deviation is the average of the absolute differences between each observation and the mean (or median). It measures how much, on average, each data point differs from the central location, using absolute values to avoid canceling out deviations. This measure is intuitive and less affected by extreme values than variance.</p>
+<p class="formula"><code>MAD = (1/n) Σ |x_i - x̄|</code></p>
+<p class="note"><strong>Use:</strong> Less sensitive to outliers than variance because it does not square deviations; good as an interpretable average deviation. <strong>Limitations:</strong> Less convenient algebraically (non-quadratic); fewer closed-form properties in probability theory.</p>
+</div>
+
+
+<div class="measure" id="mad-median">
+<h3>Median Absolute Deviation (Median AD)</h3>
+<p><span class="label">Definition:</span> The median absolute deviation is the median of the absolute differences between each data point and the dataset’s median. It provides a highly robust measure of spread that minimizes the effect of extreme values. It’s particularly useful when describing variability in skewed or heavy-tailed distributions.</p>
+<p class="formula"><code>median(|x_i - median|)</code></p>
+<p class="note"><strong>Use:</strong> Highly robust measure of spread. <strong>Advantages:</strong> Very resistant to outliers and skew; used to detect anomalies and for robust statistics. <strong>Limitations:</strong> Less commonly reported in basic summaries; scale differs from SD (needs a constant multiplier to compare under normality).</p>
+</div>
+
+
+<div class="measure" id="coefficient-variation">
+<h3>Coefficient of Variation (CV)</h3>
+<p><span class="label">Definition:</span> The coefficient of variation expresses the standard deviation as a proportion of the mean, allowing for comparison of variability across datasets with different units or magnitudes. It is particularly useful for assessing relative variability where the mean values differ substantially between datasets.</p>
+<p class="formula"><code>CV = s / x̄ (often expressed as %)</code></p>
+<p class="note"><strong>Use:</strong> Compares relative variability across datasets with different units or scales. <strong>Advantages:</strong> Unitless and easy to interpret relatively. <strong>Limitations:</strong> Not meaningful if the mean is zero or near zero; sensitive to mean changes; assumes ratio scale.</p>
+</div>
+
+
+<div class="measure" id="interdecile">
+<h3>Interdecile &amp; Percentile Ranges</h3>
+<p><span class="label">Definition:</span> Interdecile and percentile ranges measure the spread between selected percentiles of the data distribution—for example, the interdecile range (difference between the 90th and 10th percentiles) captures the spread of the central 80% of observations. These measures offer flexibility to capture how widely most of the data are dispersed without being overly influenced by extreme tails.</p>
+<p class="note"><strong>Use:</strong> Offers flexibility to capture broader or narrower central mass than IQR; robust to extremes when chosen away from tails. <strong>Limitations:</strong> Choice of percentiles is subjective; ignores extreme tails if percentiles avoid them.</p>
+</div>
+
+
+</div>
+</div>
+      </article>
+    </main>
+
+    <footer>
+        &copy; 2025 — Your Blog Name
+    </footer>
+
+
+
+<script>
+    // 🔢 Variabili cumulative globali
+let totalSimulations = 0;
+let cumulativeHeads = 0;
+let cumulativeTosses = 0;
+
+    function simulateCoinTosses(numTosses) {
+        numTosses = parseInt(numTosses);
+        const results = [];
+        let headsCount = 0;
+
+        for (let i = 1; i <= numTosses; i++) {
+          const toss = Math.random() < 0.5 ? 'H' : 'T';
+          if (toss === 'H') headsCount++;
+          results.push(headsCount / i);
+        }
+        // Aggiorna le variabili cumulative globali
+       // 🎯 Aggiornamento dei dati cumulativi
+    totalSimulations++;
+    cumulativeHeads += headsCount;
+    cumulativeTosses += numTosses;
+  // Calcolo media complessiva
+    const overallAverage = cumulativeHeads / cumulativeTosses;
+  // Aggiorna il box riassuntivo
+    document.getElementById('totalSimulations').textContent = totalSimulations;
+    document.getElementById('totalHeads').textContent = cumulativeHeads;
+    document.getElementById('overallAverage').textContent = overallAverage.toFixed(4);
+
+
+        return results;
+      }
+
+      function createChart(data) {
+        const ctx = document.getElementById('coinChart').getContext('2d');
+       if (window.coinChartInstance) {
+          window.coinChartInstance.destroy();
+        }
+        window.coinChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: Array.from({ length: data.length }, (_, i) => i + 1),
+            datasets: [{
+              label: 'Proportion of Heads',
+              data: data,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 2,
+              fill: false,
+              tension: 0.1
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Number of Tosses'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Proportion of Heads'
+                },
+                min: 0,
+                max: 1
+              }
+            }
+          }
+        });
+      }
+
+
+      function runSimulations(n) {
+        const results = simulateCoinTosses(n);
+        
+        createChart(results);
+      }
+
+
+      runSimulations(10);
+
+
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Online Mean & Variance — Interactive Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root{--bg:#f7f8fb;--card:#fff;--muted:#6b7280;--accent:#2563eb}
+    body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#0f172a; margin:0;padding:24px}
+    .wrap{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:1.4rem}
+    p.lead{margin:8px 0 22px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+    pre{background:#0b1220;color:#e6eef8;padding:12px;border-radius:8px;overflow:auto;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;font-size:.9rem}
+    code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace}
+    .controls{display:flex;flex-direction:column;gap:10px}
+    label{font-size:.9rem;color:var(--muted)}
+    select,input[type=range]{width:100%}
+    button{background:var(--accent);color:white;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+    button.secondary{background:#e6eef8;color:var(--accent)}
+    .status{display:flex;flex-direction:column;gap:8px}
+    .kpi{display:flex;gap:10px;flex-wrap:wrap}
+    .kpi .item{background:#f1f5f9;padding:10px;border-radius:8px;min-width:120px}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .log{height:220px;overflow:auto;background:#0b1220;color:#e6eef8;padding:10px;border-radius:8px;font-family:ui-monospace,Menlo,monospace}
+    .chart{height:200px;background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+    details p{margin:6px 0}
+    footer{margin-top:18px;color:var(--muted);font-size:.85rem}
+    .compare-table{width:100%;border-collapse:collapse}
+    .compare-table th,.compare-table td{padding:8px;border-bottom:1px solid #eef2ff;text-align:left}
+    .bad{color:#b91c1c}
+    .good{color:#065f46}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Recurrence formulas for Mean & Variance</h1>
+    </header>
+    <p class="lead">For the recurrence relationships of the arithmetic mean and a stable variance recurrence (Welford):</p>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>Mathematical derivations (short)</h2>
+          <details open>
+            <summary><strong>Recurrence for arithmetic mean</strong></summary>
+            <p class="small">If \(\bar x_{n} = \frac{1}{n}\sum_{i=1}^n x_i\), then</p>
+            <p>Split off the last term:</p>
+
+              <div class="math-section">
+  \[
+  \begin{aligned}
+  \bar{x}_n &= \frac{1}{n}\left(\sum_{i=1}^{n-1} x_i + x_n\right) \\
+            &= \frac{n-1}{n}\bar{x}_{n-1} + \frac{x_n}{n} \\
+            &= \bar{x}_{n-1} + \frac{x_n - \bar{x}_{n-1}}{n}
+  \end{aligned}
+  \]
+</div>
+         
+            <p class="small">Intuition: the new mean = old mean + correction proportional to residual.</p>
+          </details>
+<section>
+<section>
+<h2>2. Online Variance (Welford’s Algorithm)</h2>
+<p>
+Welford’s algorithm computes the variance incrementally and avoids catastrophic cancellation:
+</p>
+<div class="math-section">
+\[
+\begin{aligned}
+\delta &= x_n - M_{n-1}, \\
+M_n &= M_{n-1} + \frac{\delta}{n}, \\
+S_n &= S_{n-1} + \delta (x_n - M_n)
+\end{aligned}
+\]
+</div>
+<p>
+The sample variance can then be obtained as:
+</p>
+<div class="math-section">
+\[
+s^2 = \frac{S_n}{n-1}
+\]
+</div>
+</section>
+
+
+<section>
+<h2>3. JavaScript Implementation</h2>
+<pre><code>class OnlineMean {
+constructor() {
+this.n = 0;
+this.mean = 0;
+}
+update(x) {
+this.n++;
+this.mean += (x - this.mean) / this.n;
+}
+}
+
+
+class WelfordVariance {
+constructor() {
+this.n = 0;
+this.mean = 0;
+this.M2 = 0;
+}
+update(x) {
+this.n++;
+const delta = x - this.mean;
+this.mean += delta / this.n;
+const delta2 = x - this.mean;
+this.M2 += delta * delta2;
+}
+get variance() {
+return this.n > 1 ? this.M2 / (this.n - 1) : 0;
+}
+}</code></pre>
+</section>
+          <h3>Proof & intuition links</h3>
+          <p class="small">Welford's update keeps the running mean and an accumulated <code>M2</code> (sum of squared deviations). It never computes <code>sum(x^2) - sum(x)^2/n</code> directly, avoiding catastrophic cancellation when numbers are large.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>Live demonstration</h2>
+          <p class="small">Choose a source distribution, then stream data. The panel on the right shows live KPIs and a log.</p>
+
+          <div class="controls">
+            <label>Dataset</label>
+            <select id="datasetSelect">
+              <option value="normal">Normal (mean=0, sd=1)</option>
+              <option value="lognormal">Lognormal (skewed)</option>
+              <option value="large">Large magnitude (+/- tiny noise around 1e12)</option>
+              <option value="mixed">Mixed with heavy outliers</option>
+            </select>
+
+            <label>Stream mode</label>
+            <select id="modeSelect">
+              <option value="auto">Auto-play</option>
+              <option value="step">Step (one value at a time)</option>
+            </select>
+
+            <label>Speed (ms between points)</label>
+            <input type="range" id="speed" min="1" max="500" value="50">
+
+            <div style="display:flex;gap:8px">
+              <button id="startBtn">Start</button>
+              <button id="stepBtn" class="secondary">Step</button>
+              <button id="resetBtn" class="secondary">Reset</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="card">
+            <h3>What you'll see</h3>
+            <ul>
+              <li>Online mean (recurrence)</li>
+              <li>Welford mean &amp; variances (population/sample)</li>
+              <li>Naive one-pass variance (for comparison) and batch variance computed from stored array</li>
+              <li>Relative errors between online and batch (to show stability)</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>Merge formulas (useful in distributed setups)</h2>
+          <p class="small">If you have two partitions A and B with counts n_A,n_B, means μ_A, μ_B and M2_A, M2_B (sums of squared deviations about each partition mean), you can merge:</p>
+          <pre><code>n = n_A + n_B
+delta = μ_B - μ_A
+μ = μ_A + delta * (n_B / n)
+M2 = M2_A + M2_B + delta*delta * (n_A * n_B / n)
+</code></pre>
+          <p class="small">That yields exactly the same M2 as if you processed all points sequentially.</p>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card status">
+          <h3>Streaming status</h3>
+          <div class="kpi">
+            <div class="item"><div class="small">Count</div><div id="k_count">0</div></div>
+            <div class="item"><div class="small">Online Mean</div><div id="k_mean">—</div></div>
+            <div class="item"><div class="small">Welford pop var</div><div id="k_wvar">—</div></div>
+            <div class="item"><div class="small">Welford samp var</div><div id="k_wsvar">—</div></div>
+            <div class="item"><div class="small">Naive pop var</div><div id="k_nvar">—</div></div>
+          </div>
+
+          <h4 style="margin-top:10px">Relative errors (vs batch)</h4>
+          <div class="kpi">
+            <div class="item"><div class="small">Mean rel err</div><div id="e_mean">—</div></div>
+            <div class="item"><div class="small">Welford var rel err</div><div id="e_wvar">—</div></div>
+            <div class="item"><div class="small">Naive var rel err</div><div id="e_nvar">—</div></div>
+          </div>
+
+          <h4 style="margin-top:10px">Log</h4>
+          <div id="log" class="log"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Live comparisons (last state)</h3>
+          <table class="compare-table">
+            <thead><tr><th>Statistic</th><th>Online (Welford)</th><th>Batch</th></tr></thead>
+            <tbody>
+              <tr><td>Mean</td><td id="cmp_mean">—</td><td id="cmp_mean_b">—</td></tr>
+              <tr><td>Pop variance</td><td id="cmp_v_w">—</td><td id="cmp_v_b">—</td></tr>
+              <tr><td>Naive pop var</td><td id="cmp_v_naive">—</td><td id="cmp_v_b2">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </aside>
+    </div>
+
+    <footer>
+      <p>Notes: The page demonstrates why Welford (or similar compensated algorithms) are preferred in streaming settings. The naive formula <code>Var = (Σx² - (Σx)²/n)/n</code> is mathematically correct but may suffer catastrophic cancellation in floating-point arithmetic when Σx² and (Σx)²/n are large and nearly equal.</p>
+    </footer>
+  </div>
+
+<script>
+// Implementations
+class OnlineMean { constructor(){ this.n=0; this.mean=0; } update(x){ this.n++; this.mean += (x - this.mean)/this.n; } }
+class Welford { constructor(){ this.n=0; this.mean=0; this.M2=0; } update(x){ this.n++; const delta = x - this.mean; this.mean += delta / this.n; const delta2 = x - this.mean; this.M2 += delta * delta2; } variancePopulation(){ return this.n>0 ? this.M2 / this.n : NaN; } varianceSample(){ return this.n>1 ? this.M2 / (this.n-1) : NaN; } }
+class NaiveOnePass { constructor(){ this.n=0; this.sum=0; this.sumsq=0; } update(x){ this.n++; this.sum += x; this.sumsq += x*x; } variancePopulation(){ return this.n>0 ? (this.sumsq - (this.sum*this.sum)/this.n)/this.n : NaN; } }
+
+// Utilities to sample distributions
+function randNormal(mean=0, sd=1){
+  // Box-Muller
+  let u1 = Math.random(); let u2 = Math.random();
+  let z0 = Math.sqrt(-2*Math.log(u1)) * Math.cos(2*Math.PI*u2);
+  return mean + z0*sd;
+}
+function randLognormal(mu=0, sigma=1){ return Math.exp(mu + sigma * (randNormal())); }
+
+// large magnitude generator: base +/- tiny noise
+function randLarge(base=1e12, eps=1e-3){ return base + (Math.random()*2 -1)*eps; }
+
+// mixed with outliers
+function mixedGenerator(){
+  if(Math.random() < 0.999){ return randNormal(0,1); }
+  const choices = [1e9,-1e9,1e12,-1e12,5e11,-5e11,2e8,-2e8,1e6,-1e6];
+  return choices[Math.floor(Math.random()*choices.length)];
+}
+
+// UI wiring
+const datasetSelect = document.getElementById('datasetSelect');
+const startBtn = document.getElementById('startBtn');
+const resetBtn = document.getElementById('resetBtn');
+const stepBtn = document.getElementById('stepBtn');
+const modeSelect = document.getElementById('modeSelect');
+const speed = document.getElementById('speed');
+const logEl = document.getElementById('log');
+
+let interval = null;
+let buffer = []; // for batch comparisons
+let online = null, w = null, naive = null;
+let count = 0;
+
+function appendLog(msg){ const t = new Date().toISOString().slice(11,23); logEl.innerText = `[${t}] ${msg}\n` + logEl.innerText; }
+function resetState(){ if(interval) clearInterval(interval); interval=null; buffer=[]; online=new OnlineMean(); w=new Welford(); naive=new NaiveOnePass(); count=0; updateKpis(); logEl.innerText=''; appendLog('Reset state'); }
+
+function nextValue(){ const d = datasetSelect.value; let x;
+  if(d==='normal') x = randNormal(0,1);
+  else if(d==='lognormal') x = randLognormal(0,1);
+  else if(d==='large') x = randLarge(1e12,1e-3);
+  else if(d==='mixed') x = mixedGenerator();
+  buffer.push(x);
+  online.update(x); w.update(x); naive.update(x); count++; updateKpis();
+  // every 50 points log a snapshot
+  if(count % 50 === 0 || count <= 10) logSnapshot(x);
+}
+
+function logSnapshot(lastX){
+  const batchMean = buffer.reduce((a,b)=>a+b,0)/buffer.length;
+  const batchVar = buffer.reduce((a,b)=>a + (b-batchMean)*(b-batchMean),0)/buffer.length;
+  const wVar = w.variancePopulation();
+  const naiveVar = naive.variancePopulation();
+  appendLog(`n=${buffer.length} last=${lastX.toExponential(6)} mean(b)=${batchMean.toExponential(6)} mean(w)=${w.mean.toExponential(6)} var(b)=${batchVar.toExponential(6)} var(w)=${(isFinite(wVar)?wVar:NaN).toExponential(6)} naive=${(isFinite(naiveVar)?naiveVar:NaN).toExponential(6)}`);
+  // update comparison table
+  document.getElementById('cmp_mean').innerText = w.mean.toPrecision(8);
+  document.getElementById('cmp_mean_b').innerText = batchMean.toPrecision(8);
+  document.getElementById('cmp_v_w').innerText = (isFinite(wVar)?wVar.toExponential(6):'NaN');
+  document.getElementById('cmp_v_b').innerText = batchVar.toExponential(6);
+  document.getElementById('cmp_v_naive').innerText = (isFinite(naiveVar)?naiveVar.toExponential(6):'NaN');
+  document.getElementById('cmp_v_b2').innerText = batchVar.toExponential(6);
+  // relative errors
+  const rel = (a,b)=>{ if(!isFinite(a) || !isFinite(b) || Math.abs(b) < 1e-100) return '—'; return Math.abs(a-b)/Math.abs(b); };
+  document.getElementById('e_mean').innerText = rel(w.mean,batchMean) === '—' ? '—' : rel(w.mean,batchMean).toExponential(3);
+  document.getElementById('e_wvar').innerText = rel(wVar,batchVar) === '—' ? '—' : rel(wVar,batchVar).toExponential(3);
+  document.getElementById('e_nvar').innerText = rel(naiveVar,batchVar) === '—' ? '—' : rel(naiveVar,batchVar).toExponential(3);
+}
+
+function updateKpis(){ document.getElementById('k_count').innerText = count; document.getElementById('k_mean').innerText = (count? online.mean.toPrecision(8): '—'); document.getElementById('k_wvar').innerText = (count? (isFinite(w.variancePopulation())? w.variancePopulation().toExponential(6): '—') : '—'); document.getElementById('k_wsvar').innerText = (count? (isFinite(w.varianceSample())? w.varianceSample().toExponential(6): '—') : '—'); document.getElementById('k_nvar').innerText = (count? (isFinite(naive.variancePopulation())? naive.variancePopulation().toExponential(6): '—'): '—'); }
+
+startBtn.addEventListener('click', ()=>{
+  if(interval){ clearInterval(interval); interval=null; startBtn.innerText='Start'; appendLog('Paused'); return; }
+  startBtn.innerText='Pause'; appendLog('Starting stream');
+  const mode = modeSelect.value; if(mode==='auto'){ interval = setInterval(()=>{ nextValue(); }, Math.max(1, Number(speed.value))); } else { appendLog('Step mode: use Step button'); }
+});
+
+stepBtn.addEventListener('click', ()=>{ nextValue(); });
+resetBtn.addEventListener('click', ()=>{ resetState(); startBtn.innerText='Start'; });
+
+// init
+resetState();
+</script>
+</body>
+</html>
+
