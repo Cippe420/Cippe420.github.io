@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Titolo del post del blog">
+    <title>The Server Breach Problem</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        article h1 {
+            color: #111;
+            margin-bottom: 0.5rem;
+        }
+.table-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    thead {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #e0f7e0;
+    }
+        .post-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        article img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #222;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .riquadro-testo {
+            width: 400px;
+            padding: 20px;
+            margin: 40px auto;
+            background-color: #f8f9fa;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        /* Added styles for classes referenced in the HTML */
+        .wrap {
+            margin-top: 20px;
+        }
+        .panel {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .col {
+            flex: 0.85;
+        }
+
+        .warning {
+            background: #fff8e6;
+            padding: 12px;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Homework 7</h1>
+    </header>
+
+    <main>
+      <article>
+        <h1>The Server Breach Problem</h1>
+        <h2> The Problem: </h2>
+        <p>
+          Given a server that receives weekly security updates for n weeks and m attackers who can breach the system with probability p, we want to analyze in statistical terms its security, to do that we should generate random trajectories of the servers cumulative scores,
+          assign +1 if the server remains secure in a week and -1 if it is breached,
+          draw a parallel with a random walk and count how many trajectories reach each possible total score in your simulation. Additionally we also want to show how those figures converge to the binomial distribution as n and m diverge
+        </p>
+
+
+        <h2> Problem Analysis </h2>
+        <p>
+          To analyze the server breach problem, we can simulate the weekly security updates and breaches over a specified number of weeks (n) and attackers (m). Each week, we will determine whether the server remains secure or is breached based on the probability p. We will then track the cumulative score of the server over the weeks, where a secure week adds +1 to the score and a breached week subtracts -1. By generating multiple trajectories of the server's cumulative scores, we can visualize the distribution of scores and compare it to the expected binomial distribution as n and m increase.
+        </p>
+
+        <p> For each week, m attackers attempt to breach the server with probability p. The probabilities are of course, independent. If at least one attacker breaches the server, we consider the server to be breached for that week. Otherwise, it remains secure, hence the probability of the server remaining secure for the week is (1-p) to the power of m. </p>
+
+        <p> We can then describe each week with a random variable X_i such that: </p>
+        <div class="riquadro-testo">
+          <p>
+            X_i = { +1 with probability (1-p)^m
+                    -1 with probability 1 - (1-p)^m }
+          </p>
+        </div>
+
+        <p> The cumulative score after n weeks can be represented as the sum of these random variables: </p>
+        <div class="riquadro-testo">
+          <p>
+            S_n = X_1 + X_2 + ... + X_n
+          </p>
+        </div>
+
+        <p> This is basically a random walk with steps +1 and -1, so we can represent K as the number of safe weeks, and K will proceed as a binomial distribution with parameters n and (1-p)^m. For semplicity we will refer to (1-p)^m as q.</p>
+        <p> We cab then express the cumulative score S_n in terms of K: </p>
+        <div class="riquadro-testo">
+          <p>
+            S_n = (+1) K + (-1) (n-K) = 2K - n
+          </p>
+        </div>
+
+
+        <p> Therefore, the theoretical distribution of S_n being s, with s ranging from -n to n in steps of 2, can be expressed as: (here we substitute (s+n)/2 for simplicity) </p>
+        <div class="riquadro-testo">
+          <p>
+            P(S_n = s) = P(K = (s+n)/2) = Bi(n,k) q^k (1-q)^(n-k)
+          </p>
+
+        </div>
+
+        <p> Here, Bi(n,k) represents the binomial coefficient "n choose k", which calculates the number of ways to choose k successes (safe weeks) from n trials (total weeks). </p>
+
+        <p> As we can see, we have two quantities that are diverging, the number of weeks n , and the number of simulations m. Increasing the number of simulation , for each score s, the relative frequency observed will converge to the theoretical probability P(S_n = s) as m approaches infinity, according to the law of large numbers. Increasing the number of weeks, we will see that Sn will tend to a Gaussian, according to the Central Limit Theorem.</p>
+
+
+        <h2> The Simulation: </h2>
+        <p> First we need to choose the parameters for our simulation, we will choose n = 20 weeks, m = 1000 attackers, and p = 0.1 probability of breach for each attacker. </p>
+        <p> We will calculate q = (1-p)^m = (1-0.1)^1000 = 2.65614e-05, and we will choose the number of simulations: 1000. </p>
+
+
+        <p> We will then run the simulation, generating 1000 trajectories of the server's cumulative scores over 20 weeks. For each trajectory, we will track the number of safe weeks and calculate the cumulative score S_n. </p>
+
+        <h2>Simulating Random Walk and Comparing the Binomial Distribution</h2>
+<button id="rerunBtn">🔁 Rerun Simulation</button>
+<div id="randomWalk" style="width:100%;height:400px;"></div>
+<div id="binomialCompare" style="width:100%;height:400px;"></div>
+
+
+
+
+
+
+      </article>
+    </main>
+
+    <footer>
+        &copy; 2025 — Your Blog Name
+    </footer>
+
+
+
+<script>
+    // === PARAMETRI GLOBALI ===
+const n = 20;       // settimane
+const m = 5;        // attaccanti
+const p = 0.1;      // prob. successo di un attaccante
+const Nsim = 10000; // numero di traiettorie
+const q = Math.pow(1 - p, m); // prob. settimana sicura
+
+// === FUNZIONE BINOMIALE ===
+function binomialPMF(k, n, q) {
+  function comb(n, k) {
+    if (k < 0 || k > n) return 0;
+    let num = 1, den = 1;
+    for (let i = 1; i <= k; i++) {
+      num *= n - (k - i);
+      den *= i;
+    }
+    return num / den;
+  }
+  return comb(n, k) * Math.pow(q, k) * Math.pow(1 - q, n - k);
+}
+
+// === FUNZIONE DI SIMULAZIONE ===
+function runSimulation() {
+  let S_n = [];
+  let randomWalks = [];
+
+  for (let sim = 0; sim < Nsim; sim++) {
+    let path = [0];
+    let s = 0;
+    for (let i = 0; i < n; i++) {
+      const step = Math.random() < q ? 1 : -1;
+      s += step;
+      if (sim < 10) path.push(s); // salvo solo le prime 10 traiettorie
+    }
+    S_n.push(s);
+    if (sim < 10) randomWalks.push(path);
+  }
+
+  // === GRAFICO 1: RANDOM WALKS ===
+  const tracesWalk = randomWalks.map(path => ({
+    x: Array.from({length: path.length}, (_, i) => i),
+    y: path,
+    mode: 'lines',
+    opacity: 0.6,
+    line: {width: 2}
+  }));
+
+  Plotly.newPlot('randomWalk', tracesWalk, {
+    title: `Random Walk di Bernoulli (q = ${q.toFixed(3)})`,
+    xaxis: {title: 'Settimana'},
+    yaxis: {title: 'Punteggio cumulativo Sₜ'}
+  });
+
+  // === GRAFICO 2: FREQUENZE EMPIRICHE vs BINOMIALE TEORICA ===
+  const K = S_n.map(s => (s + n) / 2);
+  const counts = {};
+  for (let k of K) counts[k] = (counts[k] || 0) + 1;
+
+  const k_vals = Object.keys(counts).map(Number).sort((a,b)=>a-b);
+  const empirical = k_vals.map(k => counts[k] / Nsim);
+  const theoretical = k_vals.map(k => binomialPMF(k, n, q));
+
+  Plotly.newPlot('binomialCompare', [
+    {x: k_vals, y: empirical, type: 'bar', name: 'Empirico (simulazioni)'},
+    {x: k_vals, y: theoretical, mode: 'lines+markers', name: 'Teorico (Binomiale)'}
+  ], {
+    title: `Confronto Frequenza Empirica vs Binomiale(n=${n}, q=${q.toFixed(3)})`,
+    xaxis: {title: 'K = settimane sicure'},
+    yaxis: {title: 'Frequenza / Probabilità'}
+  });
+}
+
+// === EVENTO PULSANTE ===
+document.getElementById("rerunBtn").addEventListener("click", runSimulation);
+
+// === PRIMO LANCIO ===
+runSimulation();
+</script>
+
+</body>
+</html>
+
+

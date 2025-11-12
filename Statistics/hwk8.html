@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Titolo del post del blog">
+    <title>Breaking Caesar's Cypher</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        article h1 {
+            color: #111;
+            margin-bottom: 0.5rem;
+        }
+.table-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+
+    thead {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #e0f7e0;
+    }
+        .post-meta {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        article img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #222;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .riquadro-testo {
+            width: 400px;
+            padding: 20px;
+            margin: 40px auto;
+            background-color: #f8f9fa;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        /* Added styles for classes referenced in the HTML */
+        .wrap {
+            margin-top: 20px;
+        }
+        .panel {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .col {
+            flex: 0.85;
+        }
+
+        .warning {
+            background: #fff8e6;
+            padding: 12px;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Homework 3</h1>
+    </header>
+
+    <main>
+      <article>
+        <section>
+  <h2>Bernoulli Processes, Random Walks, and the Law of Large Numbers</h2>
+  <p>
+    A <strong>Bernoulli process</strong> is one of the most fundamental stochastic models in probability theory. It represents a sequence of independent trials, each resulting in one of two possible outcomes—often labeled <em>success</em> or <em>failure</em>—with a fixed probability <code>p</code> of success. Repeated many times, this process allows us to study the fluctuations of random outcomes and their long-term behavior.
+  </p>
+  <p>
+    When we simulate a Bernoulli process and compute the average number of successes over <code>n</code> trials, we observe that as <code>n</code> grows, the relative frequency of success converges toward the theoretical probability <code>p</code>. This phenomenon is a direct illustration of the <strong>Law of Large Numbers (LLN)</strong>: random variability dominates at small scales but averages out in the long run, revealing the deterministic structure hidden beneath randomness.
+  </p>
+  <p>
+    In graphical terms, if we plot the cumulative number of successes <code>Kₙ</code> as a function of <code>n</code>, the curve resembles a <em>random walk</em>, meandering upward and downward according to the outcomes. Each step corresponds to <code>+1</code> for a success and <code>0</code> for a failure—or equivalently, if we center it symmetrically, <code>+1</code> for success and <code>−1</code> for failure. The resulting cumulative score <code>Sₙ</code> behaves like a discrete random walk with drift. This connection provides a geometric intuition for statistical convergence: the random walk wanders, but its average slope tends toward the expected value.
+  </p>
+</section>
+
+<section>
+  <h2>The Server-Update Homework: An Extended Bernoulli Model</h2>
+  <p>
+    The “server security” problem is a direct generalization of this Bernoulli process. Each <em>week</em> corresponds to one Bernoulli trial, but instead of a single success/failure event, the outcome depends on the interaction of multiple agents—the <code>m</code> attackers.
+  </p>
+  <p>
+    Each attacker has a probability <code>p</code> of successfully breaching the system. The server remains secure in a week only if <em>none</em> of the attackers succeed. Assuming independence, the weekly probability of staying secure is therefore:
+  </p>
+  <pre><code>q = (1 - p)ᵐ</code></pre>
+  <p>
+    This means that every week is still a Bernoulli trial, but with an <em>effective</em> success probability <code>q</code> for the “safe” event. The total number of secure weeks over <code>n</code> weeks, <code>K</code>, follows a <strong>Binomial distribution</strong> <code>Binomial(n, q)</code>.
+  </p>
+  <p>
+    Thus, the server’s cumulative score (assigning <code>+1</code> if secure, <code>−1</code> if breached) evolves exactly like a <strong>biased random walk</strong> with step probabilities <code>q</code> and <code>1 − q</code>. The trajectory of <code>Sₙ</code> over time is an instance of the same stochastic structure seen in the classic Bernoulli simulation of the LLN—only with a derived probability <code>q</code> instead of a fixed one.
+  </p>
+  <p>
+    This conceptual bridge shows that both experiments—the classic Bernoulli process and the server-breach model—are different expressions of the same underlying mathematical mechanism: independent binary outcomes aggregated through repeated trials. The difference lies only in how the success probability is defined.
+  </p>
+</section>
+
+<section>
+  <h2>Binomial Coefficients and the Structure of Randomness</h2>
+  <p>
+    The number of possible sequences leading to exactly <code>K</code> successes in <code>n</code> trials is given by the <strong>binomial coefficient</strong>:
+  </p>
+  <pre><code>⟮n⟯
+ ⟮K⟯ = n! / [K! (n − K)!]</code></pre>
+  <p>
+    Each sequence of outcomes has probability <code>qᵏ (1 − q)ⁿ⁻ᵏ</code>, so the probability mass function (pmf) of the Binomial distribution is:
+  </p>
+  <pre><code>P(K) = ⟮n⟯ qᵏ (1 − q)ⁿ⁻ᵏ
+         ⟮K⟯</code></pre>
+  <p>
+    The binomial coefficients encode the <em>combinatorial multiplicity</em> of different paths leading to the same total number of successes. They appear naturally whenever we count the number of ways to select <code>K</code> successful outcomes among <code>n</code> independent trials.
+  </p>
+  <p>
+    These coefficients form the familiar <strong>Pascal’s Triangle</strong>, where each entry equals the sum of the two directly above it:
+  </p>
+  <pre><code>⟮n⟯ = ⟮n−1⟯ + ⟮n−1⟯
+ ⟮K⟯   ⟮K−1⟯     ⟮K⟯</code></pre>
+  <p>
+    This recursive structure mirrors the branching nature of the random process itself: every sequence of <code>n</code> outcomes can be viewed as extending either a success or a failure sequence of length <code>n−1</code>. Pascal’s Triangle therefore provides both a visual and algebraic map of the combinatorial structure underlying the random walk.
+  </p>
+</section>
+
+<section>
+  <h2>Binomial Expansion and Probability Algebra</h2>
+  <p>
+    The <strong>Binomial Theorem</strong>:
+  </p>
+  <pre><code>(x + y)ⁿ = Σₖ₌₀ⁿ ⟮n⟯ xᵏ yⁿ⁻ᵏ
+                   ⟮K⟯</code></pre>
+  <p>
+    reveals the algebraic foundation of the distribution. Setting <code>x = q</code> and <code>y = 1 − q</code> reproduces the normalization condition of the Binomial pmf:
+  </p>
+  <pre><code>Σₖ₌₀ⁿ ⟮n⟯ qᵏ (1 − q)ⁿ⁻ᵏ = (q + (1 − q))ⁿ = 1</code></pre>
+  <p>
+    This equality shows that the Binomial distribution is a <strong>probability measure</strong>, since all probabilities sum to one. The Binomial expansion thus plays a dual role: it’s an algebraic identity and a probabilistic law ensuring total probability conservation.
+  </p>
+</section>
+
+<section>
+  <h2>Connections with the Fibonacci Sequence</h2>
+  <p>
+    An elegant and perhaps surprising connection exists between <strong>Fibonacci numbers</strong> and <strong>binomial coefficients</strong>. The <code>n</code>th Fibonacci number can be expressed as a sum of specific binomial coefficients along the shallow diagonals of Pascal’s triangle:
+  </p>
+  <pre><code>Fₙ = Σₖ₌₀⌊(n−1)/2⌋ ⟮n−1−k⟯
+                         ⟮k⟯</code></pre>
+  <p>
+    This identity reflects how combinatorial counting principles pervade apparently unrelated sequences. In combinatorial terms, Fibonacci numbers count the number of ways to tile a strip of length <code>n</code> using tiles of length 1 and 2. Each tiling corresponds to a pattern of choices that can also be enumerated using binomial coefficients.
+  </p>
+  <p>
+    The connection reinforces a deep principle: <strong>combinatorial structures are universal across discrete stochastic systems</strong>. Whether describing random walks, network failures, or recursive sequences, the same counting laws appear in different guises.
+  </p>
+</section>
+
+<section>
+  <h2>Combinatorial and Probabilistic Insights</h2>
+  <ul>
+    <li><strong>Combinatorial Symmetry:</strong> Each random walk of <code>n</code> steps with <code>K</code> positive outcomes corresponds to exactly <code>⟮n⟯</code> distinct paths—this symmetry is the backbone of the Binomial distribution.</li>
+    <li><strong>Additivity and Recursion:</strong> The recursive construction of Pascal’s triangle parallels the recursive evolution of probabilities from one trial to the next.</li>
+    <li><strong>Statistical Convergence:</strong> As the number of trials or weeks grows, empirical frequencies converge toward the theoretical binomial distribution—manifesting the Law of Large Numbers.</li>
+    <li><strong>Gaussian Emergence:</strong> For large <code>n</code>, both models approximate the <strong>normal distribution</strong> via the Central Limit Theorem, revealing the universal bell shape arising from aggregation of independent random effects.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Comparative Summary</h2>
+  <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width:100%;">
+    <thead>
+      <tr>
+        <th>Aspect</th>
+        <th>Bernoulli LLN Simulation</th>
+        <th>Server-Update Homework</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Basic event</td>
+        <td>Single trial (success/failure)</td>
+        <td>One week, system attacked by <em>m</em> independent attackers</td>
+      </tr>
+      <tr>
+        <td>Probability of success</td>
+        <td><code>p</code></td>
+        <td><code>q = (1 - p)ᵐ</code></td>
+      </tr>
+      <tr>
+        <td>Distribution</td>
+        <td><code>Binomial(n, p)</code></td>
+        <td><code>Binomial(n, q)</code></td>
+      </tr>
+      <tr>
+        <td>Random walk formulation</td>
+        <td>Step +1 for success, −1 for failure</td>
+        <td>Step +1 for secure, −1 for breached</td>
+      </tr>
+      <tr>
+        <td>Key principle</td>
+        <td>Convergence of empirical frequency to theoretical <code>p</code> (LLN)</td>
+        <td>Convergence of simulated secure-week frequency to theoretical <code>q</code></td>
+      </tr>
+      <tr>
+        <td>Mathematical backbone</td>
+        <td>Binomial coefficients, Pascal’s triangle, combinatorics</td>
+        <td>Same structure with derived parameter <code>q</code></td>
+      </tr>
+      <tr>
+        <td>Broader connection</td>
+        <td>Demonstrates LLN and CLT</td>
+        <td>Demonstrates same principles in a multi-agent security context</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Conclusion</h2>
+  <p>
+    The two problems—Bernoulli process and the server security model—are conceptually identical manifestations of the same probabilistic engine: <strong>a sequence of independent binary experiments</strong> governed by combinatorial enumeration and binomial weighting.
+  </p>
+  <p>
+    They reveal how the fundamental structures of discrete probability—Pascal’s triangle, binomial expansion, and combinatorial coefficients—organize randomness into predictable forms. Through simulation, these models make abstract theorems tangible: the Law of Large Numbers shows that randomness is not chaos but structured variability, and the Binomial coefficients are the lattice that holds that structure together.
+  </p>
+  <p>
+    Even seemingly distant sequences like Fibonacci arise from the same combinatorial roots, reminding us that in mathematics, diversity of appearance often conceals unity of principle.
+  </p>
+</section>
+
+
+      </article>
+    </main>
+
+    <footer>
+        &copy; 2025 — Your Blog Name
+    </footer>
+
+
+
+<script>
+
+</script>
+
+</body>
+</html>
+
+
