@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Probability Main Interpretations</title>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+    body {
+        font-family: "Helvetica", Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #fafafa;
+        color: #333;
+    }
+
+    header {
+        background-color: #222;
+        color: white;
+        padding: 1.5rem 0;
+        text-align: center;
+    }
+
+    main {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: white;
+        padding: 2rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    article h1 {
+        color: #111;
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 10px;
+    }
+
+    article h2 {
+        margin-top: 2rem;
+        color: #444;
+    }
+
+    .table-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+        overflow-x: auto;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        background-color: white;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        vertical-align: top;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #4CAF50;
+        color: white;
+        text-align: center;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tr:hover {
+        background-color: #e0f7e0;
+    }
+
+    .post-meta {
+        color: #777;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+
+    article img {
+        width: 100%;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+
+    footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: #222;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .riquadro-testo {
+        width: 400px;
+        padding: 20px;
+        margin: 40px auto;
+        background-color: #f8f9fa;
+        border: 2px solid #ccc;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        color: #333;
+        line-height: 1.5;
+        overflow-y: auto;
+        max-height: 200px;
+    }
+
+    .wrap {
+        margin-top: 20px;
+    }
+    
+    .panel {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #eef2f5;
+    }
+
+    .col {
+        flex: 0.85;
+    }
+
+    .warning {
+        background: #fff8e6;
+        padding: 12px;
+        border-left: 4px solid #f59e0b;
+        border-radius: 6px;
+        margin: 12px 0;
+        font-size: 0.95rem;
+    }
+    
+    .math-block {
+        text-align: center;
+        padding: 10px 0;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h2>Foundations of Mathematics</h2>
+</header>
+
+<main>
+    <article>
+        <header class="post-meta">
+            Assignment: Probability Axioms & Measure Theory &bullet; Nov 2023
+        </header>
+
+        <h1>Interpretations of Probability & The Axiomatic Approach</h1>
+
+        <p>Historically, defining probability was philosophically difficult. Before Kolmogorov's unification, several competing interpretations existed, each with significant limitations.</p>
+
+        <div class="wrap">
+            <div class="panel">
+                <strong>1. Classical Interpretation</strong>
+                <p>Based on the concept of "equally likely outcomes." If an experiment has $N$ outcomes and $N_A$ result in event $A$, then $P(A) = N_A / N$.</p>
+                <div class="warning">
+                    <strong>Inconsistency:</strong> It is circular (defines "probability" using "equally likely") and fails when outcomes are infinite or not balanced (e.g., a weighted die).
+                </div>
+            </div>
+
+            <div class="panel">
+                <strong>2. Frequentist Interpretation</strong>
+                <p>Probability is the limit of relative frequency as the number of trials approaches infinity: $$P(A) = \lim_{n \to \infty} \frac{n_A}{n}$$</p>
+                <div class="warning">
+                    <strong>Inconsistency:</strong> True infinity is impossible in the physical world. It also cannot assign probability to unique, non-repeatable events (e.g., "Probability of rain tomorrow").
+                </div>
+            </div>
+
+            <div class="panel">
+                <strong>3. Geometric Interpretation</strong>
+                <p>Probability corresponds to a ratio of geometric measures (length, area, volume).</p>
+                <div class="warning">
+                    <strong>Inconsistency:</strong> Vulnerable to ill-defined problems like <em>Bertrand’s Paradox</em>, where the probability changes depending on how "random" is geometrically defined.
+                </div>
+            </div>
+        </div>
+
+        <h3>The Axiomatic Resolution</h3>
+        <p>Andrey Kolmogorov (1933) resolved these inconsistencies by treating probability as a mathematical object rather than a physical property. The <strong>Axiomatic Approach</strong> does not ask "what is probability," but rather "what rules must it obey?" This divorces the mechanics from the philosophy, allowing for a rigorous calculus regardless of interpretation.</p>
+
+        <hr>
+
+        <h1>Probability Theory vs. Measure Theory</h1>
+        <p>Kolmogorov formalized probability by mapping it directly to <strong>Measure Theory</strong>. A probability space is a triple $(\Omega, \mathcal{F}, P)$ which corresponds to a Measure space $(X, \Sigma, \mu)$.</p>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Probability Concept</th>
+                        <th>Measure Theory</th>
+                        <th>Definition</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sample Space</strong> ($\Omega$)</td>
+                        <td>Measurable Space ($X$)</td>
+                        <td>The set of all possible outcomes.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Events</strong> ($\mathcal{F}$)</td>
+                        <td>$\sigma$-algebra ($\Sigma$)</td>
+                        <td>A collection of subsets closed under complement and countable union.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Probability</strong> ($P$)</td>
+                        <td>Finite Measure ($\mu$)</td>
+                        <td>A function mapping sets to $[0,1]$ where total measure is 1.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Random Variable</strong></td>
+                        <td>Measurable Function</td>
+                        <td>A function $X: \Omega \to \mathbb{R}$ that maps events to real numbers.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr>
+
+        <h1>Derivations from the Axioms</h1>
+        <p>Using the three Kolmogorov axioms (Non-negativity, Normalization, and Countable Additivity), we can derive the following properties.</p>
+
+        <h3>1. The Inclusion–Exclusion Principle</h3>
+        <p>For two events $A$ and $B$, we must ensure we do not double-count the intersection.</p>
+        
+        
+
+[Image of Venn diagram showing intersection of sets A and B]
+
+
+        <div class="panel">
+            <strong>Theorem:</strong> $$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$
+            <br>
+            <strong>Proof:</strong>
+            <ol>
+                <li>We can express $A \cup B$ as a union of disjoint sets: $$A \cup B = A \cup (B \setminus A)$$</li>
+                <li>Since these are disjoint, by the 3rd Axiom: $$P(A \cup B) = P(A) + P(B \setminus A)$$</li>
+                <li>Similarly, set $B$ is the union of disjoint sets: $$B = (A \cap B) \cup (B \setminus A)$$</li>
+                <li>Therefore: $$P(B) = P(A \cap B) + P(B \setminus A)$$</li>
+                <li>Rearranging for the difference: $$P(B \setminus A) = P(B) - P(A \cap B)$$</li>
+                <li>Substituting back into step 2 yields the result. <strong>Q.E.D.</strong></li>
+            </ol>
+        </div>
+
+        <h3>2. Subadditivity (Boole's Inequality)</h3>
+        <p>The probability of a union of events is no greater than the sum of their individual probabilities, accounting for potential overlaps.</p>
+
+        <div class="panel">
+            <strong>Theorem:</strong> $$P\left( \bigcup_{i=1}^{\infty} A_i \right) \le \sum_{i=1}^{\infty} P(A_i)$$
+            <br>
+            <strong>Proof:</strong>
+            <ol>
+                <li>Construct a sequence of disjoint sets $B_i$ such that $B_1 = A_1$ and $B_i = A_i \setminus (\cup_{j=1}^{i-1} A_j)$.</li>
+                <li>Note that $B_i \subseteq A_i$, so by monotonicity, $P(B_i) \le P(A_i)$.</li>
+                <li>The union of the disjoint $B_i$ equals the union of $A_i$.</li>
+                <li>By Countable Additivity (Axiom 3):
+                    $$P(\cup A_i) = P(\cup B_i) = \sum P(B_i)$$
+                </li>
+                <li>Since $P(B_i) \le P(A_i)$, it follows that:
+                    $$\sum P(B_i) \le \sum P(A_i)$$
+                </li>
+                <li>Therefore: $$P(\cup A_i) \le \sum P(A_i)$$. <strong>Q.E.D.</strong></li>
+            </ol>
+        </div>
+
+    </article>
+</main>
+
+<footer>
+    &copy; 2023 Probability & Measure Theory Assignment
+</footer>
+
+</body>
+</html>

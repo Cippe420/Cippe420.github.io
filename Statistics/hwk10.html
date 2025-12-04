@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stochastic Process Simulation</title>
+
+<!-- 1. Configure MathJax -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<!-- 2. Load MathJax -->
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+    /* --- CORE STYLES (Your Request) --- */
+    body {
+        font-family: "Helvetica", Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #fafafa;
+        color: #333;
+    }
+
+    header {
+        background-color: #222;
+        color: white;
+        padding: 1.5rem 0;
+        text-align: center;
+    }
+
+    main {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: white;
+        padding: 2rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    article h1 {
+        color: #111;
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 10px;
+    }
+
+    article h2 {
+        margin-top: 2rem;
+        color: #444;
+        font-size: 1.4rem;
+    }
+
+    .post-meta {
+        color: #777;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #eef2f5;
+    }
+
+    .warning {
+        background: #fff8e6;
+        padding: 12px;
+        border-left: 4px solid #f59e0b;
+        border-radius: 6px;
+        margin: 12px 0;
+        font-size: 0.95rem;
+    }
+
+    footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: #222;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    /* --- SIMULATION UI STYLES --- */
+    .control-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+        align-items: flex-end;
+    }
+
+    .input-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-wrapper label {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .input-wrapper input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100px;
+    }
+
+    button.run-btn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: background 0.2s;
+    }
+
+    button.run-btn:hover {
+        background-color: #45a049;
+    }
+
+    .canvas-container {
+        position: relative;
+        width: 100%;
+        height: 250px;
+        border: 1px solid #ddd;
+        background: #fff;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+    
+    canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        background: #eee;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-family: monospace;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h2>Computational Probability</h2>
+</header>
+
+<main>
+    <article>
+        <header class="post-meta">
+            Assignment: Simulating Counting Processes &bullet; Nov 2023
+        </header>
+
+        <h1>Simulating the Poisson Limit Theorem</h1>
+
+        <p>The goal of this assignment is to understand how continuous-time stochastic processes emerge from discrete random trials. We bridge the gap between the Binomial distribution and the Poisson Point Process.</p>
+
+        <h2>1. Theoretical Framework</h2>
+        
+        <div class="panel">
+            <strong>The Setup</strong>
+            <p>We wish to simulate events occurring at a rate $\lambda$ over a time interval $T$. We approximate this by discretizing the time into $n$ small bins of width $\Delta t = T/n$.</p>
+            <p>In each bin, we perform a Bernoulli trial (a coin flip) where:</p>
+            <ul>
+                <li>$1$ (Success/Event) occurs with probability $p = \frac{\lambda}{n}$.</li>
+                <li>$0$ (Failure/No Event) occurs with probability $1 - p$.</li>
+            </ul>
+        </div>
+
+        <p>Let $N(t)$ be the number of events that have occurred up to time $t$. This is a <strong>Counting Process</strong>.</p>
+
+        <div class="warning">
+            <strong>The Poisson Limit:</strong> As $n \to \infty$, the Binomial distribution $B(n, \lambda/n)$ converges to the Poisson distribution with parameter $\lambda$. The resulting continuous-time process is a <strong>Homogeneous Poisson Point Process</strong>.
+        </div>
+
+        <h2>2. Interactive Simulation</h2>
+        <p>Use the controls below to simulate the process. Observe how the "Discrete Trials" (the micro view) accumulate to form the "Counting Process" (the macro view).</p>
+
+        <!-- CONTROL PANEL -->
+        <div class="control-group panel">
+            <div class="input-wrapper">
+                <label for="paramT">Time Horizon (T)</label>
+                <input type="number" id="paramT" value="1" step="0.1" min="0.1">
+            </div>
+            <div class="input-wrapper">
+                <label for="paramLambda">Rate (&lambda;)</label>
+                <input type="number" id="paramLambda" value="10" step="1" min="1">
+            </div>
+            <div class="input-wrapper">
+                <label for="paramN">Subintervals (n)</label>
+                <input type="number" id="paramN" value="1000" step="100" min="10">
+            </div>
+            <div class="input-wrapper">
+                <label>&nbsp;</label> <!-- Spacer -->
+                <button class="run-btn" onclick="runSimulation()">Run Simulation</button>
+            </div>
+        </div>
+
+        <!-- RESULTS STATS -->
+        <div class="stats-row">
+            <span id="resProb">p = ...</span>
+            <span id="resExpected">Expected Events: ...</span>
+            <span id="resActual">Actual Events: ...</span>
+        </div>
+
+        <!-- GRAPH 1: Discrete Events -->
+        <h3>Micro View: Discrete Events (Rug Plot)</h3>
+        <p><small>Each vertical line represents a success in a tiny subinterval.</small></p>
+        <div class="canvas-container">
+            <canvas id="chartMicro"></canvas>
+        </div>
+
+        <!-- GRAPH 2: Cumulative Process -->
+        <h3>Macro View: Counting Process $N(t)$</h3>
+        <p><small>The cumulative sum of events over time (The "Staircase").</small></p>
+        <div class="canvas-container">
+            <canvas id="chartMacro"></canvas>
+        </div>
+
+        <h2>3. Analysis of Results</h2>
+        <p>When you run the simulation with large $n$ (e.g., 5000), notice the following properties:</p>
+        <ul>
+            <li><strong>Irregularity:</strong> The steps in the second graph appear at random times, not regular intervals.</li>
+            <li><strong>Stationarity:</strong> The "slope" of the staircase roughly averages to $\lambda$.</li>
+            <li><strong>Independent Increments:</strong> The occurrence of a spike does not make the next spike more or less likely.</li>
+        </ul>
+    </article>
+</main>
+
+<footer>
+    &copy; 2023 Computational Probability Module
+</footer>
+
+<script>
+    // --- PLOTTING UTILITIES ---
+
+    function drawRugPlot(canvasId, events, T) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        
+        // Handle DPI scaling for crisp text
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const width = rect.width;
+        const height = rect.height;
+        const padding = 40;
+
+        // Clear
+        ctx.clearRect(0, 0, width, height);
+
+        // Axis
+        ctx.beginPath();
+        ctx.moveTo(padding, height - padding);
+        ctx.lineTo(width - padding, height - padding);
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw Events
+        ctx.strokeStyle = 'rgba(41, 128, 185, 0.6)';
+        ctx.lineWidth = 2;
+
+        events.forEach(t => {
+            const x = padding + (t / T) * (width - 2 * padding);
+            ctx.beginPath();
+            ctx.moveTo(x, height - padding);
+            ctx.lineTo(x, padding); // Tall vertical line
+            ctx.stroke();
+        });
+
+        // Labels
+        ctx.fillStyle = '#333';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Time (t)', width / 2, height - 10);
+        ctx.fillText('0', padding, height - 20);
+        ctx.fillText(T.toString(), width - padding, height - 20);
+    }
+
+    function drawStepChart(canvasId, events, T, maxCount) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        
+        // Handle DPI scaling
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        const width = rect.width;
+        const height = rect.height;
+        const padding = 40;
+
+        // Clear
+        ctx.clearRect(0, 0, width, height);
+
+        // Scales
+        const plotWidth = width - 2 * padding;
+        const plotHeight = height - 2 * padding;
+        
+        // Y-axis max (add slight buffer)
+        const yMax = maxCount * 1.1; 
+
+        const timeToX = (t) => padding + (t / T) * plotWidth;
+        const countToY = (c) => (height - padding) - (c / yMax) * plotHeight;
+
+        // Axes
+        ctx.beginPath();
+        ctx.moveTo(padding, padding); // Y top
+        ctx.lineTo(padding, height - padding); // Origin
+        ctx.lineTo(width - padding, height - padding); // X right
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Step Plot Logic
+        ctx.beginPath();
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 3;
+
+        let currentCount = 0;
+        let currentTime = 0;
+
+        ctx.moveTo(timeToX(0), countToY(0));
+
+        events.forEach(t => {
+            // Draw horizontal line to event time
+            ctx.lineTo(timeToX(t), countToY(currentCount));
+            // Step up
+            currentCount++;
+            // Draw vertical line up
+            ctx.lineTo(timeToX(t), countToY(currentCount));
+        });
+
+        // Draw final horizontal line to T
+        ctx.lineTo(timeToX(T), countToY(currentCount));
+        ctx.stroke();
+
+        // Labels
+        ctx.fillStyle = '#333';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Time (t)', width / 2, height - 10);
+        
+        ctx.save();
+        ctx.translate(15, height / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Count N(t)', 0, 0);
+        ctx.restore();
+
+        // Ticks
+        ctx.textAlign = 'right';
+        ctx.fillText(Math.floor(yMax), padding - 5, padding + 5);
+        ctx.fillText('0', padding - 5, height - padding);
+    }
+
+    // --- SIMULATION LOGIC ---
+
+    function runSimulation() {
+        // 1. Get Inputs
+        const T = parseFloat(document.getElementById('paramT').value);
+        const lambda = parseFloat(document.getElementById('paramLambda').value);
+        const n = parseInt(document.getElementById('paramN').value);
+
+        // 2. Setup / Validation
+        if (n <= 0 || T <= 0 || lambda < 0) {
+            alert("Please enter positive values.");
+            return;
+        }
+        
+        const p = (lambda * T) / n; // Probability per bin
+        const dt = T / n;
+
+        // Update stats display
+        document.getElementById('resProb').innerText = `p = ${p.toFixed(5)}`;
+        document.getElementById('resExpected').innerText = `Exp: ${lambda * T}`;
+
+        if (p > 1) {
+            alert("Warning: lambda/n > 1. Increase n or decrease lambda.");
+            return;
+        }
+
+        // 3. Run Bernoulli Trials
+        let events = [];
+        let count = 0;
+
+        for (let i = 0; i < n; i++) {
+            // Random float [0, 1)
+            if (Math.random() < p) {
+                // Event occurred in this bin
+                // We record the time as the center or end of the bin
+                let eventTime = i * dt; 
+                events.push(eventTime);
+                count++;
+            }
+        }
+
+        document.getElementById('resActual').innerText = `Actual: ${count}`;
+
+        // 4. Draw Graphs
+        drawRugPlot('chartMicro', events, T);
+        drawStepChart('chartMacro', events, T, count);
+    }
+
+    // Run once on load
+    window.onload = runSimulation;
+
+</script>
+
+</body>
+</html>

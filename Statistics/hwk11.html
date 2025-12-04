@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stochastic Process Simulation</title>
+
+<!-- 1. Configure MathJax -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<!-- 2. Load MathJax -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+    /* --- CORE STYLES (Your Request) --- */
+    body {
+        font-family: "Helvetica", Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #fafafa;
+        color: #333;
+    }
+
+    /* Layout for the controls */
+        .controls-container {
+            display: flex;
+            gap: 20px;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+            border-left: 5px solid #007bff;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label { margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
+        
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100px;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.2s;
+            height: 40px;
+        }
+        button:hover { background: #0056b3; }
+
+        canvas { border: 1px solid #ddd; background: #fff; width: 100%; height: 400px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .formula-display {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #eee;
+        }
+
+    header {
+        background-color: #222;
+        color: white;
+        padding: 1.5rem 0;
+        text-align: center;
+    }
+
+    main {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: white;
+        padding: 2rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    article h1 {
+        color: #111;
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 10px;
+    }
+
+    article h2 {
+        margin-top: 2rem;
+        color: #444;
+        font-size: 1.4rem;
+    }
+
+    .post-meta {
+        color: #777;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #eef2f5;
+    }
+
+    .warning {
+        background: #fff8e6;
+        padding: 12px;
+        border-left: 4px solid #f59e0b;
+        border-radius: 6px;
+        margin: 12px 0;
+        font-size: 0.95rem;
+    }
+
+    footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: #222;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    /* --- SIMULATION UI STYLES --- */
+    .control-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+        align-items: flex-end;
+    }
+
+    .input-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-wrapper label {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .input-wrapper input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100px;
+    }
+
+    button.run-btn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: background 0.2s;
+    }
+
+    button.run-btn:hover {
+        background-color: #45a049;
+    }
+
+    .canvas-container {
+        position: relative;
+        width: 100%;
+        height: 250px;
+        border: 1px solid #ddd;
+        background: #fff;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+
+    canvas { border: 1px solid #ddd; background: #f9f9f9; width: 100%; height: 400px; }
+        .controls { margin-top: 20px; padding: 15px; background: #eee; border-radius: 5px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 3px; }
+        button:hover { background: #0056b3; }
+    
+       .stats-row {
+        display: flex;
+        justify-content: space-between;
+        background: #eee;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-family: monospace;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h2>Simulating a Wiener Process</h2>
+</header>
+
+<main>
+    <article>
+
+        <h1>Simulation of a Wiener process using the Euler Maruyana method</h1>
+
+    <section>
+
+
+    The Wiener process plays an important role in both pure and applied mathematics. In pure mathematics, the Wiener process gave rise to the study of continuous time martingales. It is a key process in terms of which more complicated stochastic processes can be described. As such, it plays a vital role in stochastic calculus, diffusion processes and even potential theory. It is the driving process of Schramm–Loewner evolution. In applied mathematics, the Wiener process is used to represent the integral of a white noise Gaussian process, and so is useful as a model of noise in electronics engineering (see Brownian noise), instrument errors in filtering theory and disturbances in control theory.
+
+The Wiener process has applications throughout the mathematical sciences. In physics it is used to study Brownian motion and other types of diffusion via the Fokker–Planck and Langevin equations. It also forms the basis for the rigorous path integral formulation of quantum mechanics (by the Feynman–Kac formula, a solution to the Schrödinger equation can be represented in terms of the Wiener process) and the study of eternal inflation in physical cosmology. It is also prominent in the mathematical theory of finance, in particular the Black–Scholes option pricing model.
+
+    </section>
+
+
+    <section>
+        <h2> Reasoning about the simulation</h2>
+
+        <p>
+            To understand the simulation of a Wiener process, let's start with its mathematical definition: 
+            <p>
+                        A Wiener process is a continuous-time stochastic process $W(t)$ that starts at zero ($W(0) = 0$), and has independent and Gaussian increments \( W_{t+\Delta t} - W_t \sim \mathcal{N}(0, \Delta t) \).
+            </p>
+
+            Often, we describe a system using a Stochastic Differential Equation (SDE). $$ dX_t = \mu(X_t, t)dt + \sigma(X_t, t)dW_t $$
+        </p>
+        <p>Where:</p>
+            <ul>
+                <li>\( \mu \) is the <strong>drift</strong> (deterministic part).</li>
+                <li>\( \sigma \) is the <strong>diffusion</strong> (stochastic part).</li>
+                <li>\( dW_t \) represents the infinitesimal change in the Wiener process.</li>
+            </ul>
+
+        <p>
+            To simulate this SDE numerically, we can use the Euler-Maruyama method, which approximates the solution by discretizing time into small steps of size \( \Delta t \). The update rule for the process becomes:
+            $$ X_{t+\Delta t} = X_t + \mu(X_t, t)\Delta t + \sigma(X_t, t)\sqrt{\Delta t}Z $$
+            where \( Z \sim \mathcal{N}(0, 1) \) is a standard normal random variable.
+        </p>
+    </section>
+
+    <h2>Wiener Process Simulation (Euler-Maruyama)</h2>
+       <div class="controls-container">
+        <div class="input-group">
+            <label for="driftParam">Drift (µ)</label>
+            <input type="number" id="driftParam" value="0" step="0.1">
+        </div>
+        
+        <div class="input-group">
+            <label for="diffParam">Diffusion (σ)</label>
+            <input type="number" id="diffParam" value="1" step="0.1" min="0">
+        </div>
+
+        <button onclick="runSimulation()">Run Simulation</button>
+    </div>
+
+    <div class="formula-display" id="formulaText">
+        $$ dX_t = 0 \cdot dt + 1 \cdot dW_t $$
+    </div>
+    
+    <canvas id="simCanvas" width="800" height="400"></canvas>
+
+    </article>
+</main>
+
+<footer>
+    &copy; 2023 Computational Probability Module
+</footer>
+
+<script>
+
+        // --- 1. MATHEMATICAL HELPERS ---
+
+        // Box-Muller Transform: Generates standard normal random numbers N(0,1)
+        // JavaScript's Math.random() is Uniform(0,1), so we must convert it.
+        function generateGaussian() {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+            while(v === 0) v = Math.random();
+            return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+        }
+
+        // --- 2. THE SIMULATOR CLASS ---
+
+        class SDESimulator {
+            /**
+             * @param {Function} driftFunc - Function mu(x, t)
+             * @param {Function} diffusionFunc - Function sigma(x, t)
+             * @param {Number} T - Total time
+             * @param {Number} N - Number of steps
+             * @param {Number} x0 - Initial value
+             */
+            constructor(driftFunc, diffusionFunc, T, N, x0) {
+                this.mu = driftFunc;
+                this.sigma = diffusionFunc;
+                this.T = T;
+                this.N = N;
+                this.dt = T / N;
+                this.x0 = x0;
+            }
+
+            // The Core Euler-Maruyama Algorithm
+            simulatePath() {
+                let t = 0;
+                let x = this.x0;
+                const path = [{t: 0, x: this.x0}]; // Store initial point
+
+                for (let i = 0; i < this.N; i++) {
+                    // 1. Generate random noise Z ~ N(0,1)
+                    const Z = generateGaussian();
+                    
+                    // 2. Calculate dW (Wiener increment) -> Z * sqrt(dt)
+                    const dW = Z * Math.sqrt(this.dt);
+
+                    // 3. Calculate drift and diffusion terms based on current state
+                    const drift = this.mu(x, t) * this.dt;
+                    const diffusion = this.sigma(x, t) * dW;
+
+                    // 4. Update X (Euler-Maruyama formula)
+                    x = x + drift + diffusion;
+                    
+                    // 5. Update Time
+                    t += this.dt;
+
+                    path.push({t: t, x: x});
+                }
+                return path;
+            }
+        }
+
+        // --- 3. VISUALIZATION LOGIC ---
+        // --- 3. VISUALIZATION LOGIC ---
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function drawPath(path) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const padding = 40;
+            const width = canvas.width - padding * 2;
+            const height = canvas.height - padding * 2;
+
+            // Auto-scaling logic
+            const xValues = path.map(p => p.x);
+            // We force the scale to be at least -2 to 2 so small movements don't look huge
+            let minX = Math.min(...xValues);
+            let maxX = Math.max(...xValues);
+            
+            // Add a little buffer to the top and bottom
+            const buffer = (maxX - minX) * 0.1;
+            minX -= (buffer || 1); 
+            maxX += (buffer || 1);
+
+            const rangeX = maxX - minX;
+            const timeMax = path[path.length - 1].t;
+
+            // Mapping functions
+            const mapT = (t) => padding + (t / timeMax) * width;
+            const mapX = (x) => padding + height - ((x - minX) / rangeX) * height;
+
+            // Draw Axes
+            ctx.strokeStyle = "#999";
+            ctx.lineWidth = 1;
+            
+            // X-axis (Time)
+            const zeroY = mapX(0);
+            if (zeroY >= padding && zeroY <= canvas.height - padding) {
+                ctx.beginPath();
+                ctx.moveTo(padding, zeroY);
+                ctx.lineTo(canvas.width - padding, zeroY);
+                ctx.stroke();
+            } else {
+                // If 0 is off screen, draw bottom border
+                ctx.beginPath();
+                ctx.moveTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                ctx.stroke();
+            }
+
+            // Draw Path
+            ctx.beginPath();
+            ctx.strokeStyle = "#d63384"; // A nice magenta color
+            ctx.lineWidth = 2;
+            ctx.moveTo(mapT(path[0].t), mapX(path[0].x));
+
+            for (let i = 1; i < path.length; i++) {
+                ctx.lineTo(mapT(path[i].t), mapX(path[i].x));
+            }
+            ctx.stroke();
+        }
+
+
+        // --- 4. RUNNING THE ASSIGNMENT ---
+
+        // --- 4. INTERACTION LOGIC ---
+
+        function runSimulation() {
+            // 1. Get values from HTML inputs
+            const muInput = parseFloat(document.getElementById('driftParam').value);
+            const sigmaInput = parseFloat(document.getElementById('diffParam').value);
+
+            // 2. Update MathJax Formula Display
+            // We use MathJax.typesetPromise() to re-render the formula dynamically
+            const formulaDiv = document.getElementById('formulaText');
+            formulaDiv.innerHTML = `$$ dX_t = ${muInput} \\cdot dt + ${sigmaInput} \\cdot dW_t $$`;
+            if(window.MathJax) {
+                MathJax.typesetPromise([formulaDiv]);
+            }
+
+            // 3. Create Functions for the Simulator
+            // Note: For a standard Wiener process, mu and sigma are constants.
+            // But our class supports functions (x,t), so we wrap the constants.
+            const drift = (x, t) => muInput;
+            const diffusion = (x, t) => sigmaInput;
+
+            // 4. Run Simulator
+            // Time 2.0, 1000 steps, start at 0
+            const sim = new SDESimulator(drift, diffusion, 2.0, 1000, 0);
+            const path = sim.simulatePath();
+            
+            drawPath(path);
+        }
+
+        // Run once on page load
+        window.onload = runSimulation;
+   </script>
+
+</body>
+</html>
